@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Iniciar Sesión </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+    <div class="login-container">
+    <ion-img src="../../../assets/579b3134-6b60-4ba7-8a97-f7261ca6bc9c-removebg-preview_1.webp" alt="Logo de mi empresa" class="logo"></ion-img>
+
+  </div>
+
+
+  <div>
+    <div >
+      <form>
+        <ion-item>
+          <ion-label position="floating">Correo electrónico</ion-label>
+          <ion-input type="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input type="password"></ion-input>
+        </ion-item>
+        <ion-button type="submit" expand="block" (click)="goToHome()">Iniciar Sesión</ion-button>
+      </form>
+    </div>
+
+    <div >
+
+
+
+        <ion-button type="submit" expand="block">Registrarse</ion-button>
+
+    </div>
+  </div>
+</ion-content>

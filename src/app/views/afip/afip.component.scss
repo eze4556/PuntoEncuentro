@@ -1,0 +1,32 @@
+.register-background {
+  --background: #f0f4f7;
+}
+
+.register-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 1em;
+}
+
+form {
+  width: 100%;
+  max-width: 400px;
+  padding: 1em;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.input-item {
+  margin-bottom: 1.5em;
+}
+
+.register-button {
+  --background: #3880ff;
+  --background-hover: #3171e0;
+  --background-activated: #3171e0;
+  margin-top: 1em;
+}

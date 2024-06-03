@@ -1,0 +1,49 @@
+ion-grid {
+  height: 100%;
+}
+
+.button-square {
+  --border-radius: 8px;
+  height: auto;  /* Permitir que la altura se ajuste al contenido */
+  width: 100%; /* Ocupar todo el ancho de la columna */
+  font-size: 1.2rem;
+  display: flex; /* Usar flexbox para centrar el contenido */
+  align-items: center; /* Centrar verticalmente */
+  justify-content: center; /* Centrar horizontalmente */
+}
+
+ion-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+
+@media (max-width: 576px) {
+  .button-square {
+    height: 100px;
+    font-size: 1rem;
+  }
+}
+
+
+ion-chip {
+ --padding-start: 6px;  /* Reduce el padding inicial */
+  --padding-end: 6px;
+  --background: #fff;
+  --color: #3880ff;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the content horizontally */
+  margin-left: 50px;
+    margin-right: 50px;
+}
+ion-avatar {
+  margin-right: 8px; // Agrega un margen a la derecha del avatar
+}
+
+ion-icon {
+  font-size: 24px; // Ajusta el tamaño del icono como prefieras
+}

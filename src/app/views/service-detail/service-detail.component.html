@@ -1,0 +1,79 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Clínica Dental Sonrisas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-grid class="ion-no-padding">
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="6" size-md="6">
+      <ion-avatar class="logo">  <img src="../../../assets/images.jpeg" alt="Imagen de la clínica dental Sonrisas" class="main-image" />  </ion-avatar>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Información de contacto</ion-card-subtitle>
+      <ion-card-title>Dirección: Calle Principal 123, Ciudad</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Teléfono: (123) 456-7890</p>
+      <p>Email: infoclinicadental.com</p>
+      <p>Horario de atención:</p>
+      <ul>
+        <li>Lunes a viernes: 9:00 AM - 6:00 PM</li>
+        <li>Sábados: 9:00 AM - 1:00 PM</li>
+      </ul>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="info-card">
+    <ion-card-header class="info-card-header">
+      <ion-card-subtitle class="info-card-subtitle">Información de contacto</ion-card-subtitle>
+      <ion-card-title class="info-card-title">Dirección: Calle Principal 123, Ciudad</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="info-card-content">
+      <p><ion-icon name="call-outline"></ion-icon> Teléfono: (123) 456-7890</p>
+      <p><ion-icon name="mail-outline"></ion-icon> Email: infoclinicadental.com</p>
+      <ion-item lines="none">
+        <ion-icon name="time-outline" slot="start"></ion-icon>
+        <ion-label>Horario de atención:</ion-label>
+      </ion-item>
+      <ion-list inset="true">
+        <ion-item>Lunes a viernes: 9:00 AM - 6:00 PM</ion-item>
+        <ion-item>Sábados: 9:00 AM - 1:00 PM</ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="service-card">
+    <ion-card-header class="service-card-header">
+      <ion-card-title class="service-card-title">Servicios</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="service-card-content">
+      <ion-list lines="none">
+        <ion-item >
+          SERVICIO
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="about-card">
+    <ion-card-header class="about-card-header">
+      <ion-card-title class="about-card-title">Sobre nosotros</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="about-card-content">
+      <p>En Clínica Dental Sonrisas, nos apasiona cuidar de tu salud bucal. Nuestro equipo de profesionales altamente capacitados te brindará la mejor atención y los tratamientos más avanzados para que puedas lucir una sonrisa radiante.</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" color="primary" class="book-button">Reservar Cita</ion-button>
+</ion-content>

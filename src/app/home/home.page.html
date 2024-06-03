@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+
+    <ion-chip *ngIf="user" class="ion-text-center">
+  <ion-avatar>
+    <ion-icon name="person-circle-outline"></ion-icon>
+  </ion-avatar>
+  <ion-label color="primary">{{ user.nombre }}</ion-label>
+</ion-chip>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" class="logout-button" (click)="logout()">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col  size-sm="6">
+        <ion-button expand="block" class="button-square" (click)="navigateToAfip()">AFIP</ion-button>
+      </ion-col>
+      <ion-col size-sm="6">
+        <ion-button expand="block" class="button-square" (click)="navigateToCertificacion()">
+          CERTIFICACIÓN DE INGRESOS
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col  size-sm="6">
+        <ion-button expand="block" class="button-square" (click)="navigateToPerfil()">INFORMACIÓN PERSONAL</ion-button>
+      </ion-col>
+      <ion-col  size-sm="6">
+        <ion-button expand="block" class="button-square" (click)="navigateToFacturacion()">FACTURACIÓN</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col  size-sm="6">
+        <ion-button expand="block" class="button-square" (click)="navigateToDeclaracion()" >DECLARACIÓN JURADA (DJ)</ion-button>
+      </ion-col>
+      <ion-col  size-sm="6">
+        <ion-button expand="block" class="button-square" (click)="navigateToPlanPago()" >PLANES DE PAGO</ion-button>
+      </ion-col>
+    </ion-row>
+     <ion-row>
+      <ion-col  size-sm="6">
+        <ion-button expand="block" class="button-square" (click)="navigateToF931()" >F931</ion-button>
+      </ion-col>
+      <ion-col  size-sm="6">
+        <ion-button expand="block" class="button-square" (click)="navigateToReciboSueldo()">RECIBO DE SUELDO</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

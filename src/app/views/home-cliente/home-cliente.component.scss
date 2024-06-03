@@ -1,0 +1,8 @@
+ion-avatar {
+  width: 60px;
+  height: 60px;
+}
+
+ion-avatar img {
+  object-fit: cover; // Ajusta la imagen para que cubra todo el avatar
+}
