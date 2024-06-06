@@ -1,8 +1,65 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Mi Perfil de empresa</ion-title>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Mi Perfil de Empresa</ion-title>
+<ion-buttons slot="end">
+      <ion-button routerLink="/dashboard">Dashboard</ion-button>
+    </ion-buttons> 
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  </ion-content>
+  <ion-grid class="ion-no-padding">
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="8">
+        <ion-avatar class="logo">
+          <img src="../../../assets/images.jpeg" alt="Imagen de la empresa" class="main-image" />
+        </ion-avatar>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card class="info-card">
+    <ion-card-header class="info-card-header">
+      <ion-card-subtitle class="info-card-subtitle">Información de contacto</ion-card-subtitle>
+      <ion-card-title class="info-card-title">Dirección: Av. Pellegrini 1234, Rosario</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="info-card-content">
+      <p><ion-icon name="call-outline"></ion-icon> Teléfono: (341) 456-7890</p>
+      <p><ion-icon name="mail-outline"></ion-icon> Email: infomiempresa.com</p>
+      <ion-item lines="none">
+        <ion-icon name="time-outline" slot="start"></ion-icon>
+        <ion-label>Horario de atención:</ion-label>
+      </ion-item>
+      <ion-list inset="true">
+        <ion-item>Lunes a viernes: 9:00 AM - 6:00 PM</ion-item>
+        <ion-item>Sábados: 9:00 AM - 1:00 PM</ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="service-card">
+    <ion-card-header class="service-card-header">
+      <ion-card-title class="service-card-title">Servicios</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="service-card-content">
+      <ion-list lines="none">
+        <ion-item>Servicio 1</ion-item>
+        <ion-item>Servicio 2</ion-item>
+        <ion-item>Servicio 3</ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="about-card">
+    <ion-card-header class="about-card-header">
+      <ion-card-title class="about-card-title">Sobre nosotros</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="about-card-content">
+      <p>Somos una empresa dedicada a brindar soluciones innovadoras y de calidad. Nos apasiona lo que hacemos y nos esforzamos por superar las expectativas de nuestros clientes.</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

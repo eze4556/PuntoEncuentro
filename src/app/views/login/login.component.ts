@@ -64,4 +64,12 @@ goToHome() {
   this.router.navigate(['/homeCliente']);
 }
 
+goToRegister() {
+  this.router.navigate(['/register']);
+}
+
+tienda() {
+  this.router.navigate(['/PerfilEmpresa']);
+}
+
 }

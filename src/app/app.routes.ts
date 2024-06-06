@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
- 
+
 {
     path: 'login',
     loadComponent: () => import('./views/login/login.component').then((m) => m.LoginComponent),
@@ -34,7 +34,10 @@ export const routes: Routes = [
     loadComponent: () => import('./views/search-filters/search-filters.component').then((m) => m.SearchFiltersComponent),
   },
 
-
+{
+    path: 'register',
+    loadComponent: () => import('./views/register/register.component').then((m) => m.RegisterComponent),
+  },
 
 
 

@@ -14,7 +14,7 @@ import {
   IonCardContent,
   IonToolbar,
   IonTitle,
-  IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect } from '@ionic/angular/standalone';
+  IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect, IonIcon } from '@ionic/angular/standalone';
 import { Component, OnInit, Input } from '@angular/core';
 import { FirestoreService } from '../../common/services/firestore.service';
 import { Observable } from 'rxjs';
@@ -26,7 +26,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
  standalone: true,
-  imports: [IonSpinner, IonButtons, IonBackButton,
+  imports: [IonIcon, IonSpinner, IonButtons, IonBackButton,
     IonHeader,
     IonTitle,
     IonToolbar,
@@ -56,6 +56,13 @@ export class DashboardComponent  {
 
   constructor() { }
 
+createRange(num: number) {
+  return new Array(num);
+}
 
+resenasRecientes = [
+  { cliente: 'Ana López', comentario: 'Excelente servicio, muy profesional.', calificacion: 5 },
+  { cliente: 'Carlos Rodríguez', comentario: 'Muy recomendable, volveré pronto.', calificacion: 4 },
+];
 
 }

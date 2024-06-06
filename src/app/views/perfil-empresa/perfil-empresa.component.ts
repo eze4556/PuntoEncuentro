@@ -6,6 +6,7 @@ import {
   IonContent,
   IonGrid,
   IonRow,
+  IonIcon,
   IonCol,
   IonCard,
   IonCardHeader,
@@ -13,20 +14,24 @@ import {
   IonList,
   IonCardContent,
   IonToolbar,
+  IonCardSubtitle,
   IonTitle,
-  IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect } from '@ionic/angular/standalone';
+  IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect, IonAvatar } from '@ionic/angular/standalone';
 import { Component, OnInit, Input } from '@angular/core';
 import { FirestoreService } from '../../common/services/firestore.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+
+
 
 @Component({
   selector: 'app-perfil-empresa',
   templateUrl: './perfil-empresa.component.html',
   styleUrls: ['./perfil-empresa.component.scss'],
 standalone: true,
-  imports: [IonSpinner, IonButtons, IonBackButton,
+  imports: [IonAvatar, IonSpinner, IonButtons, IonBackButton,
     IonHeader,
     IonTitle,
     IonToolbar,
@@ -37,6 +42,8 @@ standalone: true,
     IonGrid,
     IonRow,
     IonCol,
+    IonIcon,
+    IonCardSubtitle,
     IonCard,
     IonCardHeader,
     IonCardTitle,
@@ -47,7 +54,8 @@ standalone: true,
     ReactiveFormsModule,
     IonSelectOption,
     IonSelect,
-    IonButton
+    IonButton,
+    RouterLink
 
   ],
 })
