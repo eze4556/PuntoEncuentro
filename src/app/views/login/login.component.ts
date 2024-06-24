@@ -61,15 +61,15 @@ export class LoginComponent   {
 
 
 goToHome() {
-  this.router.navigate(['/homeCliente']);
+  this.router.navigate(['/home']);
 }
 
 goToRegister() {
   this.router.navigate(['/register']);
 }
 
-tienda() {
-  this.router.navigate(['/PerfilEmpresa']);
-}
+// tienda() {
+//   this.router.navigate(['/PerfilEmpresa']);
+// }
 
 }

@@ -20,6 +20,9 @@ import { FirestoreService } from '../../common/services/firestore.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ReviewsComponent } from '../reviews/reviews.component';
+
 
 @Component({
   selector: 'app-service-detail',
@@ -47,15 +50,20 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
     IonSelectOption,
     IonSelect,
-    IonButton
-
+    IonButton,
+    ReviewsComponent
   ],
 })
 
 export class ServiceDetailComponent   {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
-
+  navigateToReview() {
+    this.router.navigate(['/review']);
+  }
+  navigateToCita() {
+    this.router.navigate(['/cita']);
+  }
 
 }

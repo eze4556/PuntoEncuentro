@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Clínica Dental Sonrisas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-no-padding">
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="6" size-md="6">
+        <ion-avatar class="logo">
+          <img src="../../../assets/images.jpeg" alt="Imagen de la clínica dental Sonrisas" class="main-image" />
+        </ion-avatar>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Selecciona una fecha</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-datetime display-format="DD/MM/YYYY" (ionChange)="onDateSelected($event)"></ion-datetime>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="availableSlots.length > 0">
+    <ion-card-header>
+      <ion-card-subtitle>Horarios disponibles</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let slot of availableSlots" (click)="bookAppointment(slot)">
+          {{ slot }}
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

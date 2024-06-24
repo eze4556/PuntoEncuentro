@@ -1,0 +1,44 @@
+<ion-card class="about-card">
+  <ion-card-header class="about-card-header">
+    <ion-card-title class="about-card-title">Reseñas</ion-card-title>
+  </ion-card-header>
+  <ion-card-content class="about-card-content">
+    <div class="review-grid">
+      <div *ngFor="let review of paginatedReviews">
+        <ion-card class="review-card">
+          <ion-card-header class="review-card-header">
+            <ion-card-title class="review-card-title">{{ review.cliente_id }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>{{ review.comentario }}</p>
+            <p>Calificación: {{ review.calificacion }}</p>
+            <p>Fecha: {{ review.fecha | date: 'shortDate' }}</p>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+    <div class="pagination-controls">
+      <ion-button [disabled]="currentPage === 1" (click)="previousPage()">Anterior</ion-button>
+      <p>Página {{ currentPage }} de {{ totalPages }}</p>
+      <ion-button [disabled]="currentPage === totalPages" (click)="nextPage()">Siguiente</ion-button>
+    </div>
+  </ion-card-content>
+</ion-card>
+
+<ion-button expand="block" color="primary" (click)="toggleForm()">Agregar Reseña</ion-button>
+
+<ion-card *ngIf="showForm">
+  <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
+    <ion-item>
+      <ion-label>Calificación</ion-label>
+      <ion-select formControlName="calificacion" placeholder="Selecciona una calificación">
+        <ion-select-option *ngFor="let rating of ratings" [value]="rating">{{ rating }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label>Comentario</ion-label>
+      <ion-textarea formControlName="comentario"></ion-textarea>
+    </ion-item>
+    <ion-button expand="block" type="submit" [disabled]="!reviewForm.valid">Enviar</ion-button>
+  </form>
+</ion-card>
