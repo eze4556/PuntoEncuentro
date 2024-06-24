@@ -23,6 +23,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { AuthService } from 'src/app/common/services/auth.service';
+import { User } from 'src/app/common/models/users.models';
 
 @Component({
   selector: 'app-profile',
@@ -34,24 +36,20 @@ import { RouterModule } from '@angular/router';
   , IonIcon, IonRouterOutlet, IonSplitPane, RouterModule],
 })
 export class ProfileComponent implements OnInit {
-  user: any;
+
   userType: string = '';
   selectedOption: string;
-  // constructor(
-    // private authService: AuthService
-  // ) {}
+
+  user: User | null = null;
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    // this.authService.getUser().subscribe(user => {
-    //   this.user = user;
-    //   this.userType = user.tipo;
-    // });
+    this.authService.getCurrentUser().subscribe(user => {
+      this.user = user;
+      console.log(this.user)
+    });
   }
-  constructor() {
-    // Inicializa con la primera opción seleccionada
-    this.selectedOption = 'dashboard';
-  }
-
   selectOption(option: string) {
     this.selectedOption = option;
   }

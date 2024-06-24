@@ -10,21 +10,11 @@
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
         <ion-list>
-          <!-- <ion-item [routerLink]="['/perfil/account-info']">
-            <ion-icon name="person" slot="start"></ion-icon>
-            <ion-label>Información de la cuenta</ion-label>
-          </ion-item>
-          <ion-item [routerLink]="['/perfil/my-appointments']">
-            <ion-icon name="calendar" slot="start"></ion-icon>
-            <ion-label>Mis Citas</ion-label>
-          </ion-item> -->
-          <!-- <ion-item [routerLink]="['/perfil/dashboard']" *ngIf="userType === 'proveedor'"> -->
-            <ion-item [routerLink]="['/perfil/dashboard']">
+          <ion-item [routerLink]="['/perfil/dashboard']" (click)="selectOption('dashboard')">
             <ion-icon name="calendar" slot="start"></ion-icon>
             <ion-label>Dashboard</ion-label>
           </ion-item>
-          <!-- <ion-item [routerLink]="['/perfil/perfilEmpresa']" *ngIf="userType === 'proveedor'"> -->
-          <ion-item [routerLink]="['/perfil/perfilEmpresa']" >
+          <ion-item [routerLink]="['/perfil/perfilEmpresa']" (click)="selectOption('perfilEmpresa')">
             <ion-icon name="briefcase" slot="start"></ion-icon>
             <ion-label>Perfil Empresa</ion-label>
           </ion-item>

@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
 
 const { v4: uuidv4 } = require('uuid');
 
-import { UserI } from '../models/users.models';
+import { User } from '../models/users.models';
 import { Citas } from '../models/cita.model';
 
 // Convertidor genérico para Firestore
@@ -105,34 +105,34 @@ export class FirestoreService {
     }
   }
 
-  async loginUser(dni: string, password: string): Promise<UserI | undefined> {
+  // async loginUser(dni: string, password: string): Promise<User | undefined> {
+  //   try {
+  //     const userCollection = collection(this.firestore, 'Usuarios');
+  //     const q = query(userCollection, where('dni', '==', dni));
+  //     const querySnapshot = await getDocs(q);
+
+  //     if (!querySnapshot.empty) {
+  //       const userDoc = querySnapshot.docs[0];
+  //       const user = userDoc.data() as User;
+
+  //       if (password === user) {
+  //         localStorage.setItem('userId', user.id);
+  //         return user;
+  //       } else {
+  //         return undefined;
+  //       }
+  //     } else {
+  //       return undefined;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al obtener credenciales del usuario:", error);
+  //     throw error;
+  //   }
+  // }
+
+  async getUserData(userId: string): Promise<User | undefined> {
     try {
-      const userCollection = collection(this.firestore, 'Usuarios');
-      const q = query(userCollection, where('dni', '==', dni));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const userDoc = querySnapshot.docs[0];
-        const user = userDoc.data() as UserI;
-
-        if (password === user.password) {
-          localStorage.setItem('userId', user.id);
-          return user;
-        } else {
-          return undefined;
-        }
-      } else {
-        return undefined;
-      }
-    } catch (error) {
-      console.error("Error al obtener credenciales del usuario:", error);
-      throw error;
-    }
-  }
-
-  async getUserData(userId: string): Promise<UserI | undefined> {
-    try {
-      const userDocRef = doc(this.firestore, `Usuarios/${userId}`).withConverter(converter<UserI>());
+      const userDocRef = doc(this.firestore, `Usuarios/${userId}`).withConverter(converter<User>());
       const userDocSnap = await getDoc(userDocRef);
       return userDocSnap.exists() ? userDocSnap.data() : undefined;
     } catch (error) {

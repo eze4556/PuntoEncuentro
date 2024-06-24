@@ -1,9 +1,7 @@
-export interface UserI {
+export interface User {
   id: string;
   nombre: string;
-  apellido: string;
-  direccion: string;
-  dni: string;
-  edad?: number;
-  password: string;
+  correo: string;
+  tipo_usuario: 'cliente' | 'proveedor'
+  fecha_registro: Date;
 }
