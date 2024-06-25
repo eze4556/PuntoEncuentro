@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FirestoreService } from '../../common/services/firestore.service';
-import { Citas } from '../../common/models/cita.model';  // Asegúrate de importar el modelo de citas
+import { Citas } from '../../common/models/cita.model';
 
 @Component({
   selector: 'app-cita',
@@ -14,61 +14,128 @@ import { Citas } from '../../common/models/cita.model';  // Asegúrate de import
 export class CitaComponent {
   selectedDate: string = '';
   availableSlots: string[] = [];
+  serviceSchedule: any = {};
 
-  constructor(private firestoreService: FirestoreService) { }
+  constructor(private firestoreService: FirestoreService) {
+    this.fetchServiceSchedule();
+  }
+
+  async fetchServiceSchedule() {
+    try {
+      console.log('Fetching service schedule...');
+      const scheduleDoc = await this.firestoreService.getDocumentById('horarios', 'Xih5U7P3pwfs6JxUo3wD');
+      console.log('scheduleDoc:', scheduleDoc);
+      if (scheduleDoc) {
+        console.log('Schedule document exists.');
+        this.serviceSchedule = scheduleDoc;
+        console.log('Service schedule data:', this.serviceSchedule);
+        this.initializeCalendar();
+      } else {
+        console.error('No se encontró el horario para el servicio.');
+      }
+    } catch (error) {
+      console.error('Error al obtener el horario del servicio:', error);
+    }
+  }
+
+  initializeCalendar() {
+    const datePicker = document.querySelector('ion-datetime');
+    if (datePicker) {
+      datePicker.addEventListener('ionRender', () => {
+        const days = Array.from(datePicker.shadowRoot.querySelectorAll('.calendar-day'));
+        days.forEach(day => {
+          const date = day.getAttribute('data-day');
+          if (date && !this.isDayAvailable(new Date(date))) {
+            day.classList.add('unavailable-day');
+          }
+        });
+      });
+    }
+  }
+
+  isDayAvailable(date: Date): boolean {
+    const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
+    const selectedDays: { [key: string]: boolean } = Object.keys(this.serviceSchedule.selectedDays).reduce((acc: { [key: string]: boolean }, key: string) => {
+      acc[key.toLowerCase()] = this.serviceSchedule.selectedDays[key];
+      return acc;
+    }, {});
+    console.log(`Checking availability for day: ${dayName}`);
+    console.log(`Selected days from schedule:`, this.serviceSchedule.selectedDays);
+    console.log(`Normalized selected days:`, selectedDays);
+    console.log(`Checking if ${dayName} is in selectedDays: ${dayName in selectedDays}`);
+    console.log(`Value of ${dayName} in selectedDays: ${selectedDays[dayName]}`);
+    return selectedDays[dayName];
+  }
 
   onDateSelected(event: any) {
     this.selectedDate = event.detail.value;
+    console.log(`Selected date: ${this.selectedDate}`);
     this.fetchAvailableSlots();
   }
 
   fetchAvailableSlots() {
-    // Aquí deberías implementar la lógica para obtener los horarios disponibles
-    // Basado en la fecha seleccionada (this.selectedDate)
-    // Por ahora se usan horarios de ejemplo
-    this.availableSlots = ['10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM'];
+    const selectedDateObj = new Date(this.selectedDate);
+    if (!this.isDayAvailable(selectedDateObj)) {
+      this.availableSlots = [];
+      console.log('Selected day is not available');
+      return;
+    }
+
+    const startTime = this.convertToMinutes(this.serviceSchedule.startTime);
+    const endTime = this.convertToMinutes(this.serviceSchedule.endTime);
+    const [breakStart, breakEnd] = this.convertToTimeRange(this.serviceSchedule.breakTimes);
+    console.log(`Service hours: ${this.serviceSchedule.startTime} to ${this.serviceSchedule.endTime}`);
+    console.log(`Break times: ${this.serviceSchedule.breakTimes}`);
+    console.log(`Converted times: start=${startTime}, end=${endTime}, breakStart=${breakStart}, breakEnd=${breakEnd}`);
+
+    this.availableSlots = [];
+    for (let time = startTime; time < endTime; time += 30) {
+      if (time >= breakStart && time < breakEnd) continue;
+      this.availableSlots.push(this.convertToTimeString(time));
+    }
+    console.log(`Available slots: ${this.availableSlots.join(', ')}`);
+  }
+
+  convertToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  convertToTimeString(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${this.padNumber(hours)}:${this.padNumber(mins)}`;
+  }
+
+  convertToTimeRange(timeRange: string): [number, number] {
+    const [start, end] = timeRange.split('-').map(time => this.convertToMinutes(time));
+    return [start, end];
+  }
+
+  padNumber(num: number): string {
+    return num < 10 ? '0' + num : num.toString();
   }
 
   async bookAppointment(slot: string) {
     try {
-      // const user = await this.firestoreService.getAuthUser();
-
-      // Convertir slot a formato de 24 horas
-      const [time, modifier] = slot.split(' ');
-      let [hours, minutes] = time.split(':');
-      if (modifier === 'PM' && hours !== '12') {
-        hours = String(Number(hours) + 12);
-      }
-      if (modifier === 'AM' && hours === '12') {
-        hours = '00';
-      }
-      const slot24 = `${hours}:${minutes}`;
-
-      // Obtener solo la fecha de `this.selectedDate`
       const [date] = this.selectedDate.split('T');
-
-      // Crear fecha completa
-      const dateTimeString = `${date}T${slot24}:00`;
-      console.log('date:', date);
-      console.log('slot24:', slot24);
-      console.log('dateTimeString:', dateTimeString);
+      const dateTimeString = `${date}T${slot}:00`;
       const fechaCita = new Date(dateTimeString);
-      console.log('fechaCita:', fechaCita);
 
-      // Validar que la fecha sea válida
       if (isNaN(fechaCita.getTime())) {
         throw new Error('Fecha inválida');
       }
 
       const cita: Citas = {
         id: this.firestoreService.createIdDoc(),
-        servicio_id: 'servicioId',  // Reemplaza con el ID del servicio correspondiente
+        servicio_id: 'servicioId',
         cliente_id: 'user.uid',
-        proveedor_id: 'proveedorId',  // Reemplaza con el ID del proveedor correspondiente
+        proveedor_id: 'proveedorId',
         fecha_cita: fechaCita,
-        estado: 'pendiente',  // Estado inicial de la cita
-        notas: ''  // Notas adicionales, si las hay
+        estado: 'pendiente',
+        notas: ''
       };
+
       await this.firestoreService.createCita(cita);
       console.log(`Cita reservada para el ${this.selectedDate} a las ${slot}`);
     } catch (error) {

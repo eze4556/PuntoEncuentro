@@ -7,18 +7,16 @@ import {
   setDoc,
   DocumentData,
   WithFieldValue,
-  getDocs,
-  query,
-  where,
   collectionData,
   docData,
   updateDoc,
   deleteDoc,
-  UpdateData,
-  DocumentReference
+  DocumentReference,
+  CollectionReference,
+  DocumentSnapshot,
+  QueryDocumentSnapshot
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-
 const { v4: uuidv4 } = require('uuid');
 
 import { User } from '../models/users.models';
@@ -27,7 +25,7 @@ import { Citas } from '../models/cita.model';
 // Convertidor genérico para Firestore
 const converter = <T>() => ({
   toFirestore: (data: WithFieldValue<T>) => data,
-  fromFirestore: (snapshot: any) => snapshot.data() as T
+  fromFirestore: (snapshot: QueryDocumentSnapshot<DocumentData>) => snapshot.data() as T
 });
 
 const docWithConverter = <T>(firestore: Firestore, path: string) =>
@@ -46,7 +44,7 @@ export class FirestoreService {
     return this.firestore;
   }
 
-  getDocument<T>(enlace: string): Promise<DocumentData> {
+  getDocument<T>(enlace: string): Promise<DocumentSnapshot<DocumentData>> {
     const document = docWithConverter<T>(this.firestore, enlace);
     return getDoc(document);
   }
@@ -56,8 +54,8 @@ export class FirestoreService {
     return docData(document) as Observable<T>;
   }
 
-  getCollectionChanges<T>(path: string): Observable<T[]> {
-    const itemCollection = collection(this.firestore, path);
+  getCollectionChanges<T extends { id?: string }>(path: string): Observable<T[]> {
+    const itemCollection = collection(this.firestore, path) as CollectionReference<T>;
     return collectionData(itemCollection, { idField: 'id' }) as Observable<T[]>;
   }
 
@@ -67,15 +65,15 @@ export class FirestoreService {
   }
 
   async createDocumentWithAutoId<T>(data: T, enlace: string): Promise<void> {
-    const itemCollection = collection(this.firestore, enlace);
+    const itemCollection = collection(this.firestore, enlace) as CollectionReference<T>;
     const newDocRef = doc(itemCollection).withConverter(converter<T>());
     await setDoc(newDocRef, data);
   }
 
-  async updateDocument<T>(data: UpdateData<T>, enlace: string, idDoc: string): Promise<void> {
-    const document = docWithConverter<T>(this.firestore, `${enlace}/${idDoc}`);
-    return updateDoc(document, data);
-  }
+  // async updateDocument<T>(data: Partial<T>, enlace: string, idDoc: string): Promise<void> {
+  //   const document = docWithConverter<T>(this.firestore, `${enlace}/${idDoc}`);
+  //   return updateDoc(document, data as WithFieldValue<Partial<T>>);
+  // }
 
   deleteDocumentID(enlace: string, idDoc: string): Promise<void> {
     const document = doc(this.firestore, `${enlace}/${idDoc}`);
@@ -94,41 +92,17 @@ export class FirestoreService {
     return { uid: '05OTLvPNICH5Gs9ZsW0k' };
   }
 
-  public async getDocumentById<T>(collectionPath: string, documentId: string): Promise<DocumentData | undefined> {
+  async getDocumentById(collectionPath: string, id: string): Promise<DocumentData | undefined> {
     try {
-      const docRef = doc(this.firestore, collectionPath, documentId);
-      const docSnap = await getDoc(docRef);
-      return docSnap.exists() ? docSnap.data() : undefined;
+      const docRef = doc(this.firestore, `${collectionPath}/${id}`);
+      const docSnapshot = await getDoc(docRef);
+      console.log('docSnapshot:', docSnapshot);
+      return docSnapshot.exists() ? docSnapshot.data() : undefined;
     } catch (error) {
-      console.error("Error al obtener el documento:", error);
+      console.error('Error fetching document:', error);
       throw error;
     }
   }
-
-  // async loginUser(dni: string, password: string): Promise<User | undefined> {
-  //   try {
-  //     const userCollection = collection(this.firestore, 'Usuarios');
-  //     const q = query(userCollection, where('dni', '==', dni));
-  //     const querySnapshot = await getDocs(q);
-
-  //     if (!querySnapshot.empty) {
-  //       const userDoc = querySnapshot.docs[0];
-  //       const user = userDoc.data() as User;
-
-  //       if (password === user) {
-  //         localStorage.setItem('userId', user.id);
-  //         return user;
-  //       } else {
-  //         return undefined;
-  //       }
-  //     } else {
-  //       return undefined;
-  //     }
-  //   } catch (error) {
-  //     console.error("Error al obtener credenciales del usuario:", error);
-  //     throw error;
-  //   }
-  // }
 
   async getUserData(userId: string): Promise<User | undefined> {
     try {
