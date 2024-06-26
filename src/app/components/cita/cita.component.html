@@ -32,11 +32,14 @@
       <ion-card-subtitle>Horarios disponibles</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-      <ion-list>
-        <ion-item *ngFor="let slot of availableSlots" (click)="bookAppointment(slot)">
+      <ion-select [(ngModel)]="selectedSlot" placeholder="Selecciona un horario">
+        <ion-select-option *ngFor="let slot of availableSlots" [value]="slot">
           {{ slot }}
-        </ion-item>
-      </ion-list>
+        </ion-select-option>
+      </ion-select>
+      <ion-button expand="full" (click)="confirmAppointment()" [disabled]="!selectedSlot">
+        Confirmar cita
+      </ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>

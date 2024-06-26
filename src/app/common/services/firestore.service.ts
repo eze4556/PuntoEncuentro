@@ -1,24 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  Firestore,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  DocumentData,
-  WithFieldValue,
-  collectionData,
-  docData,
-  updateDoc,
-  deleteDoc,
-  DocumentReference,
-  CollectionReference,
-  DocumentSnapshot,
-  QueryDocumentSnapshot
-} from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue, collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference, DocumentSnapshot, QueryDocumentSnapshot } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 const { v4: uuidv4 } = require('uuid');
-
+import { Timestamp } from '@firebase/firestore';
 import { User } from '../models/users.models';
 import { Citas } from '../models/cita.model';
 
@@ -44,14 +28,9 @@ export class FirestoreService {
     return this.firestore;
   }
 
-  getDocument<T>(enlace: string): Promise<DocumentSnapshot<DocumentData>> {
+  getDocument<T>(enlace: string): Promise<DocumentSnapshot<T>> {
     const document = docWithConverter<T>(this.firestore, enlace);
     return getDoc(document);
-  }
-
-  getDocumentChanges<T>(enlace: string): Observable<T> {
-    const document = docWithConverter<T>(this.firestore, enlace);
-    return docData(document) as Observable<T>;
   }
 
   getCollectionChanges<T extends { id?: string }>(path: string): Observable<T[]> {
@@ -69,11 +48,6 @@ export class FirestoreService {
     const newDocRef = doc(itemCollection).withConverter(converter<T>());
     await setDoc(newDocRef, data);
   }
-
-  // async updateDocument<T>(data: Partial<T>, enlace: string, idDoc: string): Promise<void> {
-  //   const document = docWithConverter<T>(this.firestore, `${enlace}/${idDoc}`);
-  //   return updateDoc(document, data as WithFieldValue<Partial<T>>);
-  // }
 
   deleteDocumentID(enlace: string, idDoc: string): Promise<void> {
     const document = doc(this.firestore, `${enlace}/${idDoc}`);
@@ -119,4 +93,31 @@ export class FirestoreService {
     const document = docWithConverter<Citas>(this.firestore, `Citas/${data.id}`);
     return setDoc(document, data);
   }
+
+  async getAppointmentsByDate(date: string): Promise<Citas[]> {
+    try {
+      const appointmentsRef = collection(this.firestore, 'Citas') as CollectionReference<Citas>;
+      const querySnapshot = await getDocs(appointmentsRef);
+      const appointments: Citas[] = [];
+      querySnapshot.forEach(doc => {
+        const appointment = doc.data();
+        console.log('Raw appointment fecha_cita:', appointment.fecha_cita);
+
+        // Asegúrate de que appointment.fecha_cita es un Timestamp
+        const appointmentDate = (appointment.fecha_cita as Timestamp).toDate();
+        console.log('Converted appointmentDate:', appointmentDate);
+
+        if (appointmentDate.toISOString().startsWith(date)) {
+          appointments.push(appointment);
+        }
+      });
+      return appointments;
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      throw error;
+    }
+  }
+
+
+
 }
