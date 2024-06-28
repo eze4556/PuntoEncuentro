@@ -19,7 +19,6 @@ import {
   IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect, IonAvatar, IonMenu, IonMenuToggle, IonSplitPane
 } from '@ionic/angular/standalone';
 import { Component, OnInit } from '@angular/core';
-// import { AuthService } from '../../common/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';

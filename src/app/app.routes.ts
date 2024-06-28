@@ -25,6 +25,10 @@ export const routes: Routes = [
         path: 'perfilEmpresa',
         loadComponent: () => import('./components/perfil-empresa/perfil-empresa.component').then((m) => m.PerfilEmpresaComponent),
       },
+      {
+        path: 'horarios',
+        loadComponent: () => import('./components/horarios/horarios.component').then(m => m.ScheduleConfigComponent)
+      },
       // {
       //   path: 'account-info',
       //   loadComponent: () => import('./components/account-info/account-info.component').then((m) => m.AccountInfoComponent),

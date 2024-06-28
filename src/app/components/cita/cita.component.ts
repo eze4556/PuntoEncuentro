@@ -1,78 +1,196 @@
+import { IonButtons, IonBackButton, IonHeader, IonTitle, IonToolbar, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardContent, IonSelectOption, IonSelect, IonButton, IonAvatar, IonRouterOutlet, IonCardSubtitle, IonDatetime } from '@ionic/angular/standalone';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { FirestoreService } from '../../common/services/firestore.service';
-import { Citas } from '../../common/models/cita.model';  // Asegúrate de importar el modelo de citas
+import { Citas } from '../../common/models/cita.model';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Timestamp } from '@firebase/firestore';
 
 @Component({
   selector: 'app-cita',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [IonButtons, IonBackButton, IonHeader, IonToolbar, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardContent, IonSelectOption, IonSelect, IonButton, IonRouterOutlet, IonTitle, IonAvatar, IonCardSubtitle, IonDatetime, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './cita.component.html',
   styleUrls: ['./cita.component.scss']
 })
 export class CitaComponent {
   selectedDate: string = '';
+  selectedSlot: string = '';
   availableSlots: string[] = [];
+  serviceSchedule: any = {};
+  existingAppointments: Citas[] = [];
 
-  constructor(private firestoreService: FirestoreService) { }
+  constructor(private firestoreService: FirestoreService) {
+    this.fetchServiceSchedule();
+  }
 
-  onDateSelected(event: any) {
+  async fetchServiceSchedule() {
+    try {
+      console.log('Fetching service schedule...');
+      const scheduleDoc = await this.firestoreService.getDocumentById('horarios', 'i4cl9Q0yW8s7xeoIrV5s');
+      console.log('scheduleDoc:', scheduleDoc);
+      if (scheduleDoc) {
+        console.log('Schedule document exists.');
+        this.serviceSchedule = scheduleDoc;
+        console.log('Service schedule data:', this.serviceSchedule);
+        this.initializeCalendar();
+      } else {
+        console.error('No se encontró el horario para el servicio.');
+      }
+    } catch (error) {
+      console.error('Error al obtener el horario del servicio:', error);
+    }
+  }
+
+  initializeCalendar() {
+    const datePicker = document.querySelector('ion-datetime');
+    if (datePicker) {
+      datePicker.addEventListener('ionRender', () => {
+        const days = Array.from(datePicker.shadowRoot.querySelectorAll('.calendar-day'));
+        days.forEach(day => {
+          const date = day.getAttribute('data-day');
+          if (date && !this.isDayAvailable(new Date(date))) {
+            day.classList.add('unavailable-day');
+          }
+        });
+      });
+    }
+  }
+
+  isDayAvailable(date: Date): boolean {
+    const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
+    const selectedDays: { [key: string]: boolean } = Object.keys(this.serviceSchedule.selectedDays).reduce((acc: { [key: string]: boolean }, key: string) => {
+      acc[key.toLowerCase()] = this.serviceSchedule.selectedDays[key];
+      return acc;
+    }, {});
+    // console.log(`Checking availability for day: ${dayName}`);
+    // console.log(`Selected days from schedule:`, this.serviceSchedule.selectedDays);
+    // console.log(`Normalized selected days:`, selectedDays);
+    // console.log(`Checking if ${dayName} is in selectedDays: ${dayName in selectedDays}`);
+    // console.log(`Value of ${dayName} in selectedDays: ${selectedDays[dayName]}`);
+    return selectedDays[dayName];
+  }
+
+  async onDateSelected(event: any) {
     this.selectedDate = event.detail.value;
+    console.log(`Selected date: ${this.selectedDate}`);
+    await this.fetchExistingAppointments();
     this.fetchAvailableSlots();
   }
 
-  fetchAvailableSlots() {
-    // Aquí deberías implementar la lógica para obtener los horarios disponibles
-    // Basado en la fecha seleccionada (this.selectedDate)
-    // Por ahora se usan horarios de ejemplo
-    this.availableSlots = ['10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM'];
-  }
 
-  async bookAppointment(slot: string) {
+  // async fetchExistingAppointments() {
+  //   try {
+  //     const appointments = await this.firestoreService.getAppointmentsByDate(this.selectedDate);
+  //     console.log('Fetched appointments:', appointments);
+  //     this.existingAppointments = appointments.map(appointment => {
+  //       return {
+  //         ...appointment,
+  //         fecha_cita: (appointment.fecha_cita as Timestamp).toDate()
+  //       } as unknown as Citas;
+  //     });
+  //     console.log('Existing appointments:', this.existingAppointments);
+  //   } catch (error) {
+  //     console.error('Error fetching existing appointments:', error);
+  //   }
+  // }
+
+  async fetchExistingAppointments() {
     try {
-      // const user = await this.firestoreService.getAuthUser();
-
-      // Convertir slot a formato de 24 horas
-      const [time, modifier] = slot.split(' ');
-      let [hours, minutes] = time.split(':');
-      if (modifier === 'PM' && hours !== '12') {
-        hours = String(Number(hours) + 12);
-      }
-      if (modifier === 'AM' && hours === '12') {
-        hours = '00';
-      }
-      const slot24 = `${hours}:${minutes}`;
-
-      // Obtener solo la fecha de `this.selectedDate`
-      const [date] = this.selectedDate.split('T');
-
-      // Crear fecha completa
-      const dateTimeString = `${date}T${slot24}:00`;
-      console.log('date:', date);
-      console.log('slot24:', slot24);
-      console.log('dateTimeString:', dateTimeString);
-      const fechaCita = new Date(dateTimeString);
-      console.log('fechaCita:', fechaCita);
-
-      // Validar que la fecha sea válida
-      if (isNaN(fechaCita.getTime())) {
-        throw new Error('Fecha inválida');
-      }
-
-      const cita: Citas = {
-        id: this.firestoreService.createIdDoc(),
-        servicio_id: 'servicioId',  // Reemplaza con el ID del servicio correspondiente
-        cliente_id: 'user.uid',
-        proveedor_id: 'proveedorId',  // Reemplaza con el ID del proveedor correspondiente
-        fecha_cita: fechaCita,
-        estado: 'pendiente',  // Estado inicial de la cita
-        notas: ''  // Notas adicionales, si las hay
-      };
-      await this.firestoreService.createCita(cita);
-      console.log(`Cita reservada para el ${this.selectedDate} a las ${slot}`);
+      const appointments = await this.firestoreService.getAppointmentsByDate(this.selectedDate);
+      console.log('Fetched appointments:', appointments);
+      this.existingAppointments = appointments;
+      console.log('Existing appointments:', this.existingAppointments);
     } catch (error) {
-      console.error('Error al reservar la cita:', error);
+      console.error('Error fetching existing appointments:', error);
     }
   }
+
+  fetchAvailableSlots() {
+    const selectedDateObj = new Date(this.selectedDate);
+    if (!this.isDayAvailable(selectedDateObj)) {
+        this.availableSlots = [];
+        console.log('Selected day is not available');
+        return;
+    }
+
+    const startTime = this.convertToMinutes(this.serviceSchedule.startTime);
+    const endTime = this.convertToMinutes(this.serviceSchedule.endTime);
+    const [breakStart, breakEnd] = this.convertToTimeRange(this.serviceSchedule.breakTimes);
+    // console.log(`Service hours: ${this.serviceSchedule.startTime} to ${this.serviceSchedule.endTime}`);
+    // console.log(`Break times: ${this.serviceSchedule.breakTimes}`);
+    // console.log(`Converted times: start=${startTime}, end=${endTime}, breakStart=${breakStart}, breakEnd=${breakEnd}`);
+
+    this.availableSlots = [];
+    for (let time = startTime; time < endTime; time += 30) {
+        if (time >= breakStart && time < breakEnd) continue;
+        const slot = this.convertToTimeString(time);
+        if (!this.isSlotBooked(slot)) {
+            this.availableSlots.push(slot);
+        }
+    }
+    console.log(`Available slots: ${this.availableSlots.join(', ')}`);
+}
+
+isSlotBooked(slot: string): boolean {
+  const slotDate = new Date(`${this.selectedDate.split('T')[0]}T${slot}:00`);
+  if (isNaN(slotDate.getTime())) {
+    console.error('Invalid slot date:', slotDate);
+    return false;
+  }
+
+  return this.existingAppointments.some(appointment => {
+    const appointmentDate = (appointment.fecha_cita as Timestamp).toDate();
+    return appointmentDate.getTime() === slotDate.getTime();
+  });
+}
+
+
+
+  convertToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  convertToTimeString(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${this.padNumber(hours)}:${this.padNumber(mins)}`;
+  }
+
+  convertToTimeRange(timeRange: string): [number, number] {
+    const [start, end] = timeRange.split('-').map(time => this.convertToMinutes(time));
+    return [start, end];
+  }
+
+  padNumber(num: number): string {
+    return num < 10 ? '0' + num : num.toString();
+  }
+
+  async confirmAppointment() {
+    try {
+        const [date] = this.selectedDate.split('T');
+        const dateTimeString = `${date}T${this.selectedSlot}:00`;
+        const fechaCita = new Date(dateTimeString);
+
+        if (isNaN(fechaCita.getTime())) {
+            throw new Error('Fecha inválida');
+        }
+
+        const cita: Citas = {
+            id: this.firestoreService.createIdDoc(),
+            servicio_id: 'servicioId',
+            cliente_id: 'user.uid',
+            proveedor_id: 'proveedorId',
+            fecha_cita: Timestamp.fromDate(fechaCita), // Convertir Date a Timestamp
+            estado: 'pendiente',
+            notas: ''
+        };
+
+        await this.firestoreService.createCita(cita);
+        console.log(`Cita reservada para el ${this.selectedDate} a las ${this.selectedSlot}`);
+    } catch (error) {
+        console.error('Error al reservar la cita:', error);
+    }
+}
 }

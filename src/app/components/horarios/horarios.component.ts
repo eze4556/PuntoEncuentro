@@ -1,0 +1,85 @@
+import { Component } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { IonHeader, IonItem, IonButton, IonToolbar, IonContent, IonLabel, IonRow, IonGrid, IonCol, IonTitle, IonCheckbox, IonText, IonSelect, IonSelectOption, IonInput } from '@ionic/angular/standalone';
+
+@Component({
+  selector: 'app-schedule-config',
+  templateUrl: './horarios.component.html',
+  styleUrls: ['./horarios.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    IonHeader,
+    IonItem,
+    IonButton,
+    IonToolbar,
+    IonContent,
+    IonLabel,
+    IonRow,
+    IonGrid,
+    IonCol,
+    IonTitle,
+    IonCheckbox,
+    IonText,
+    IonSelect,
+    IonSelectOption,
+    IonInput
+  ]
+})
+export class ScheduleConfigComponent {
+  days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  selectedDays: { [key: string]: boolean } = {};
+  startTime: string = '';
+  endTime: string = '';
+  breakStart: string = '';
+  breakEnd: string = '';
+  breakTimes: string = '';
+
+  timeSlots: string[] = [];
+
+  constructor(private firestore: AngularFirestore) {
+    this.initializeTimeSlots();
+  }
+
+  initializeTimeSlots() {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute of ['00', '30']) {
+        times.push(`${this.padNumber(hour)}:${minute}`);
+      }
+    }
+    this.timeSlots = times;
+  }
+
+  padNumber(num: number): string {
+    return num < 10 ? '0' + num : num.toString();
+  }
+
+  saveSchedule() {
+    const schedule = {
+      userId: 'testUserId',  // Valor de prueba
+      selectedDays: this.selectedDays,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      breakTimes: `${this.breakStart}-${this.breakEnd}`,
+    };
+
+    console.log(schedule);
+    if (!schedule.startTime || !schedule.endTime) {
+      console.error('Hora de inicio o fin no puede estar vacía');
+      return;
+    }
+
+    this.firestore.collection('horarios').add(schedule)
+      .then(() => {
+        console.log('Horario guardado con éxito');
+      })
+      .catch(error => {
+        console.error('Error al guardar el horario: ', error);
+      });
+  }
+}
