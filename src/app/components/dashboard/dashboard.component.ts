@@ -1,68 +1,71 @@
 import {
-  IonItem,
-  IonButton,
-  IonLabel,
-  IonInput,
-  IonContent,
+  Component,
+  OnInit,
+} from '@angular/core';
+import { RouterModule } from '@angular/router';
+import {
   IonGrid,
   IonRow,
   IonCol,
   IonCard,
   IonCardHeader,
   IonCardTitle,
-  IonList,
   IonCardContent,
+  IonButton,
+  IonContent,
+  IonHeader,
   IonToolbar,
   IonTitle,
-  IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect, IonIcon } from '@ionic/angular/standalone';
-import { Component, OnInit, Input } from '@angular/core';
-import { FirestoreService } from '../../common/services/firestore.service';
-import { Observable } from 'rxjs';
+  IonButtons,
+  IonBackButton,
+  IonList,
+  IonItem,
+  IonIcon,
+  IonLabel
+} from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {IonRouterOutlet} from '@ionic/angular'
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
- standalone: true,
-  imports: [IonIcon, IonSpinner, IonButtons, IonBackButton,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonItem,
-    IonInput,
-    IonLabel,
-    IonContent,
+  standalone: true,
+  imports: [
     IonGrid,
     IonRow,
     IonCol,
     IonCard,
     IonCardHeader,
     IonCardTitle,
-    IonList,
     IonCardContent,
+    IonButton,
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonBackButton,
+    IonList,
+    IonItem,
+    IonIcon,
+    IonLabel,
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    IonSelectOption,
-    IonSelect,
-    IonButton
-
+    RouterModule
   ],
 })
+export class DashboardComponent implements OnInit {
 
-export class DashboardComponent  {
+  resenasRecientes = [
+    { cliente: 'Juan', comentario: 'Muy buen servicio', calificacion: 5 },
+    { cliente: 'Ana', comentario: 'Excelente atención', calificacion: 4 }
+  ];
 
   constructor() { }
 
-createRange(num: number) {
-  return new Array(num);
-}
+  ngOnInit() { }
 
-resenasRecientes = [
-  { cliente: 'Ana López', comentario: 'Excelente servicio, muy profesional.', calificacion: 5 },
-  { cliente: 'Carlos Rodríguez', comentario: 'Muy recomendable, volveré pronto.', calificacion: 4 },
-];
-
+  createRange(num: number) {
+    return new Array(num);
+  }
 }
