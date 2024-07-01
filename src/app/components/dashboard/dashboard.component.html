@@ -41,10 +41,10 @@
           </ion-card-header>
           <ion-card-content>
             <ion-list>
-              <ion-item >
+              <ion-item>
                 <ion-label>
-                  <h2>CITA CON CLIENTE : JOEL</h2>
-                  <p>FECHA: 14:05:2021   10HS</p>
+                  <h2>CITA CON CLIENTE: JOEL</h2>
+                  <p>FECHA: 14:05:2021 10HS</p>
                 </ion-label>
               </ion-item>
             </ion-list>
@@ -71,6 +71,15 @@
             </ion-list>
           </ion-card-content>
         </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="12" size-md="6">
+        <ion-button expand="block" [routerLink]="['/perfil/historial-citas']">Historial de Citas</ion-button>
+      </ion-col>
+      <ion-col size="12" size-md="6">
+        <ion-button expand="block" [routerLink]="['/perfil/historial-resenas']">Historial de Reseñas</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

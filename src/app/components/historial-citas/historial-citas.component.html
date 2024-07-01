@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Historial de Citas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="citas$ | async as citas; else loading">
+    <ion-item *ngFor="let cita of citas">
+      <ion-label>
+        <h2>{{ cita.fecha_cita }}</h2>
+        <p>Cliente ID: {{ cita.cliente_id }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ng-template #loading>
+    <ion-spinner></ion-spinner>
+  </ng-template>
+</ion-content>
+

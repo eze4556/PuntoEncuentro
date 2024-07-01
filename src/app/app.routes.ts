@@ -5,10 +5,6 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./views/login/login.component').then((m) => m.LoginComponent),
   },
-  // {
-  //   path: 'selectUser',
-  //   loadComponent: () => import('./components/select-user-type/select-user-type.component').then((m) => m.SelectUserTypeComponent),
-  // },
   {
     path: 'home',
     loadComponent: () => import('./views/home/home.page').then((m) => m.HomePage),
@@ -22,29 +18,28 @@ export const routes: Routes = [
         loadComponent: () => import('./components/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
+        path: 'historial-citas',
+        loadComponent: () => import('./components/historial-citas/historial-citas.component').then((m) => m.HistorialCitasComponent),
+      },
+      {
+        path: 'historial-resenas',
+        loadComponent: () => import('./components/historial-resenas/historial-resenas.component').then((m) => m.HistorialResenasComponent),
+      },
+      {
         path: 'perfilEmpresa',
         loadComponent: () => import('./components/perfil-empresa/perfil-empresa.component').then((m) => m.PerfilEmpresaComponent),
       },
       {
         path: 'horarios',
-        loadComponent: () => import('./components/horarios/horarios.component').then(m => m.ScheduleConfigComponent)
+        loadComponent: () => import('./components/horarios/horarios.component').then(m => m.ScheduleConfigComponent),
       },
-      // {
-      //   path: 'account-info',
-      //   loadComponent: () => import('./components/account-info/account-info.component').then((m) => m.AccountInfoComponent),
-      // },
-      // {
-      //   path: 'my-appointments',
-      //   loadComponent: () => import('./components/my-appointments/my-appointments.component').then((m) => m.MyAppointmentsComponent),
-      // },
       {
         path: '',
-        redirectTo: 'account-info',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
       },
     ],
   },
-  // Rutas Cliente
   {
     path: 'homeCliente',
     loadComponent: () => import('./components/home-cliente/home-cliente.component').then((m) => m.HomeClienteComponent),

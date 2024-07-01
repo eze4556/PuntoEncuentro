@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FirestoreService } from '../../common/services/firestore.service';
 import { Citas } from '../../common/models/cita.model';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Timestamp } from '@firebase/firestore';
 
 @Component({
   selector: 'app-cita',
@@ -63,44 +62,19 @@ export class CitaComponent {
       acc[key.toLowerCase()] = this.serviceSchedule.selectedDays[key];
       return acc;
     }, {});
-    // console.log(`Checking availability for day: ${dayName}`);
-    // console.log(`Selected days from schedule:`, this.serviceSchedule.selectedDays);
-    // console.log(`Normalized selected days:`, selectedDays);
-    // console.log(`Checking if ${dayName} is in selectedDays: ${dayName in selectedDays}`);
-    // console.log(`Value of ${dayName} in selectedDays: ${selectedDays[dayName]}`);
     return selectedDays[dayName];
   }
 
   async onDateSelected(event: any) {
     this.selectedDate = event.detail.value;
-    console.log(`Selected date: ${this.selectedDate}`);
     await this.fetchExistingAppointments();
     this.fetchAvailableSlots();
   }
 
-
-  // async fetchExistingAppointments() {
-  //   try {
-  //     const appointments = await this.firestoreService.getAppointmentsByDate(this.selectedDate);
-  //     console.log('Fetched appointments:', appointments);
-  //     this.existingAppointments = appointments.map(appointment => {
-  //       return {
-  //         ...appointment,
-  //         fecha_cita: (appointment.fecha_cita as Timestamp).toDate()
-  //       } as unknown as Citas;
-  //     });
-  //     console.log('Existing appointments:', this.existingAppointments);
-  //   } catch (error) {
-  //     console.error('Error fetching existing appointments:', error);
-  //   }
-  // }
-
   async fetchExistingAppointments() {
     try {
-      const appointments = await this.firestoreService.getAppointmentsByDate(this.selectedDate);
-      console.log('Fetched appointments:', appointments);
+      const appointments = await this.firestoreService.getAppointmentsByDate(this.selectedDate.split('T')[0]);
       this.existingAppointments = appointments;
-      console.log('Existing appointments:', this.existingAppointments);
     } catch (error) {
       console.error('Error fetching existing appointments:', error);
     }
@@ -109,43 +83,28 @@ export class CitaComponent {
   fetchAvailableSlots() {
     const selectedDateObj = new Date(this.selectedDate);
     if (!this.isDayAvailable(selectedDateObj)) {
-        this.availableSlots = [];
-        console.log('Selected day is not available');
-        return;
+      this.availableSlots = [];
+      return;
     }
 
     const startTime = this.convertToMinutes(this.serviceSchedule.startTime);
     const endTime = this.convertToMinutes(this.serviceSchedule.endTime);
     const [breakStart, breakEnd] = this.convertToTimeRange(this.serviceSchedule.breakTimes);
-    // console.log(`Service hours: ${this.serviceSchedule.startTime} to ${this.serviceSchedule.endTime}`);
-    // console.log(`Break times: ${this.serviceSchedule.breakTimes}`);
-    // console.log(`Converted times: start=${startTime}, end=${endTime}, breakStart=${breakStart}, breakEnd=${breakEnd}`);
 
     this.availableSlots = [];
     for (let time = startTime; time < endTime; time += 30) {
-        if (time >= breakStart && time < breakEnd) continue;
-        const slot = this.convertToTimeString(time);
-        if (!this.isSlotBooked(slot)) {
-            this.availableSlots.push(slot);
-        }
+      if (time >= breakStart && time < breakEnd) continue;
+      const slot = this.convertToTimeString(time);
+      if (!this.isSlotBooked(slot)) {
+        this.availableSlots.push(slot);
+      }
     }
-    console.log(`Available slots: ${this.availableSlots.join(', ')}`);
-}
-
-isSlotBooked(slot: string): boolean {
-  const slotDate = new Date(`${this.selectedDate.split('T')[0]}T${slot}:00`);
-  if (isNaN(slotDate.getTime())) {
-    console.error('Invalid slot date:', slotDate);
-    return false;
   }
 
-  return this.existingAppointments.some(appointment => {
-    const appointmentDate = (appointment.fecha_cita as Timestamp).toDate();
-    return appointmentDate.getTime() === slotDate.getTime();
-  });
-}
-
-
+  isSlotBooked(slot: string): boolean {
+    const slotDateStr = `${this.selectedDate.split('T')[0]}T${slot}:00`;
+    return this.existingAppointments.some(appointment => appointment.fecha_cita === slotDateStr);
+  }
 
   convertToMinutes(time: string): number {
     const [hours, minutes] = time.split(':').map(Number);
@@ -169,28 +128,24 @@ isSlotBooked(slot: string): boolean {
 
   async confirmAppointment() {
     try {
-        const [date] = this.selectedDate.split('T');
-        const dateTimeString = `${date}T${this.selectedSlot}:00`;
-        const fechaCita = new Date(dateTimeString);
+      const [date] = this.selectedDate.split('T');
+      const dateTimeString = `${date}T${this.selectedSlot}:00`;
 
-        if (isNaN(fechaCita.getTime())) {
-            throw new Error('Fecha inválida');
-        }
+      const cita: Citas = {
+        id: this.firestoreService.createIdDoc(),
+        servicio_id: 'servicioId',
+        cliente_id: 'user.uid',
+        proveedor_id: 'proveedorId',
+        fecha_cita: dateTimeString,
+        estado: 'pendiente',
+        notas: ''
+      };
 
-        const cita: Citas = {
-            id: this.firestoreService.createIdDoc(),
-            servicio_id: 'servicioId',
-            cliente_id: 'user.uid',
-            proveedor_id: 'proveedorId',
-            fecha_cita: Timestamp.fromDate(fechaCita), // Convertir Date a Timestamp
-            estado: 'pendiente',
-            notas: ''
-        };
-
-        await this.firestoreService.createCita(cita);
-        console.log(`Cita reservada para el ${this.selectedDate} a las ${this.selectedSlot}`);
+      await this.firestoreService.createCita(cita);
+      console.log(`Cita reservada para el ${this.selectedDate} a las ${this.selectedSlot}`);
     } catch (error) {
-        console.error('Error al reservar la cita:', error);
+      console.error('Error al reservar la cita:', error);
     }
+  }
 }
-}
+
