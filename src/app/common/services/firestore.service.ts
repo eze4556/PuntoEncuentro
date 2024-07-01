@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue, collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference, DocumentSnapshot, QueryDocumentSnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue, collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference, DocumentSnapshot, QueryDocumentSnapshot, query, where } from '@angular/fire/firestore'; // Importar query y where
+
 import { Observable } from 'rxjs';
-import { Timestamp } from '@firebase/firestore';
 const { v4: uuidv4 } = require('uuid');
 
 import { User } from '../models/users.models';
 import { Citas } from '../models/cita.model';
+import { Reviews } from '../models/reviews.model';
 
 // Convertidor genérico para Firestore
 const converter = <T>() => ({
@@ -106,6 +107,31 @@ export class FirestoreService {
       }
     });
     return appointments;
+  }
+
+  async getAppointmentsByService(serviceId: string): Promise<Citas[]> {
+    const appointmentsRef = collection(this.firestore, 'Citas') as CollectionReference<Citas>;
+    const querySnapshot = await getDocs(query(appointmentsRef, where('servicio_id', '==', serviceId)));
+    const appointments: Citas[] = [];
+    querySnapshot.forEach(doc => {
+      appointments.push(doc.data());
+    });
+    return appointments;
+  }
+
+  async getReviewsByService(serviceId: string): Promise<Reviews[]> {
+    const reviewsRef = collection(this.firestore, 'reviews');
+    const querySnapshot = await getDocs(reviewsRef);
+
+    const resenas: Reviews[] = [];
+    querySnapshot.forEach(doc => {
+      const resena = doc.data() as Reviews;
+      if (resena.servicio_id === serviceId) {
+        resenas.push(resena);
+      }
+    });
+
+    return resenas;
   }
 }
 
