@@ -5,7 +5,7 @@ export interface Citas {
   servicio_id: string;
   cliente_id: string;
   proveedor_id: string;
-  fecha_cita: Timestamp;
+  fecha_cita: string;
   estado: 'pendiente' | 'confirmada' | 'cancelada';
   notas: string;
 }

@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue, collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference, DocumentSnapshot, QueryDocumentSnapshot } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-const { v4: uuidv4 } = require('uuid');
 import { Timestamp } from '@firebase/firestore';
+const { v4: uuidv4 } = require('uuid');
+
 import { User } from '../models/users.models';
 import { Citas } from '../models/cita.model';
 
@@ -95,29 +96,16 @@ export class FirestoreService {
   }
 
   async getAppointmentsByDate(date: string): Promise<Citas[]> {
-    try {
-      const appointmentsRef = collection(this.firestore, 'Citas') as CollectionReference<Citas>;
-      const querySnapshot = await getDocs(appointmentsRef);
-      const appointments: Citas[] = [];
-      querySnapshot.forEach(doc => {
-        const appointment = doc.data();
-        console.log('Raw appointment fecha_cita:', appointment.fecha_cita);
-
-        // Asegúrate de que appointment.fecha_cita es un Timestamp
-        const appointmentDate = (appointment.fecha_cita as Timestamp).toDate();
-        console.log('Converted appointmentDate:', appointmentDate);
-
-        if (appointmentDate.toISOString().startsWith(date)) {
-          appointments.push(appointment);
-        }
-      });
-      return appointments;
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-      throw error;
-    }
+    const appointmentsRef = collection(this.firestore, 'Citas') as CollectionReference<Citas>;
+    const querySnapshot = await getDocs(appointmentsRef);
+    const appointments: Citas[] = [];
+    querySnapshot.forEach(doc => {
+      const appointment = doc.data();
+      if (appointment.fecha_cita.startsWith(date)) {
+        appointments.push(appointment);
+      }
+    });
+    return appointments;
   }
-
-
-
 }
+
