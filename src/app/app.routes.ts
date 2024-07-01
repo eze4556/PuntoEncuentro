@@ -5,6 +5,10 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./views/login/login.component').then((m) => m.LoginComponent),
   },
+  // {
+  //   path: 'selectUser',
+  //   loadComponent: () => import('./components/select-user-type/select-user-type.component').then((m) => m.SelectUserTypeComponent),
+  // },
   {
     path: 'home',
     loadComponent: () => import('./views/home/home.page').then((m) => m.HomePage),

@@ -1,34 +1,40 @@
 import { IonHeader, IonToolbar, IonContent, IonButton, IonBackButton, IonChip, IonAvatar, IonIcon, IonLabel, IonButtons, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 // home.page.ts
 import { Component, OnInit } from '@angular/core';
-// import { AuthService } from '../../common/services/auth.service';
+import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/common/services/auth.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone:true,
-  imports: [IonHeader, IonToolbar,IonContent, IonButton,IonBackButton, IonChip,IonAvatar,IonIcon,IonLabel,IonButtons,IonGrid,IonRow,IonCol,]
+  imports: [IonHeader, CommonModule,IonToolbar,IonContent, IonButton,IonBackButton, IonChip,IonAvatar,IonIcon,IonLabel,IonButtons,IonGrid,IonRow,IonCol,]
 })
 export class HomePage implements OnInit {
   user: any;
   userType: string = '';
 
   constructor(
-    // private authService: AuthService,
+    private authService: AuthService,
      private router: Router) {}
 
-  ngOnInit() {
-    // this.authService.getUser().subscribe(user => {
-    //   this.user = user;
-    //   this.userType = user.tipo;
-    // });
-  }
-
-  logout() {
-    // this.authService.logout();
-    this.router.navigate(['/login']);
+ngOnInit() {
+  this.authService.getCurrentUser().subscribe(user => {
+    this.user = user;
+    if (user) {
+      this.userType = user.tipo_usuario;
+    } else {
+      this.userType = ''; // O cualquier valor por defecto que consideres apropiado
+    }
+  });
+}
+   logout() {
+    this.authService.logout().then(() => {
+      this.router.navigate(['/login']);
+    });
   }
 
   navigateToPerfil() {

@@ -98,4 +98,7 @@ async register() {
   }
 }
 
+
+irAlogin(){  this.router.navigate(['/login']);}
+
 }
