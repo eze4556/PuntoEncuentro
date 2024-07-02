@@ -27,7 +27,7 @@ ngOnInit() {
     if (user) {
       this.userType = user.tipo_usuario;
     } else {
-      this.userType = ''; // O cualquier valor por defecto que consideres apropiado
+      this.userType = ''; // O cualquier valor por defecto que consideres apropia2
     }
   });
 }
