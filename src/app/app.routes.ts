@@ -6,6 +6,15 @@ export const routes: Routes = [
     loadComponent: () => import('./views/login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'recuperarPassword',
+    loadComponent: () => import('./components/reset-password/reset-password.component').then((m) => m.ResetPasswordComponent),
+  },
+    {
+    path: 'recuperarEmail',
+    loadComponent: () => import('./components/recovery-email/recovery-email.component').then((m) => m.RecoveryEmailComponent),
+  },
+
+  {
     path: 'home',
     loadComponent: () => import('./views/home/home.page').then((m) => m.HomePage),
   },

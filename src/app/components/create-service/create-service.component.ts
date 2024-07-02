@@ -1,9 +1,9 @@
 import { IonicModule } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { FirestoreService } from '../../common/services/firestore.service';
 import { AuthService } from '../../common/services/auth.service';
-import { CommonModule } from '@angular/common';
 import { environment } from 'src/environments/environment';
 
 
@@ -53,29 +53,29 @@ export class CreateServiceComponent  implements OnInit {
     this.imagenUsuario = event.target.files[0];
   }
 
-  // async onSubmit() {
-  //   if (this.createServiceForm.valid) {
-  //     const currentUser = await this.authService.getCurrentUser().toPromise();
-  //     if (currentUser && currentUser.id) {
-  //       const serviceData = {
-  //         ...this.createServiceForm.value,
-  //         providerId: currentUser.id,
-  //         imageUrl: this.imagenUsuario ? URL.createObjectURL(this.imagenUsuario) : ''
-  //       };
-  //       await this.firestoreService.createService(serviceData);
-  //     }
-  //   }
-  // }
-
   async onSubmit() {
     if (this.createServiceForm.valid) {
-      const serviceData = {
-        ...this.createServiceForm.value,
-        imageUrl: ''  // Placeholder for image URL if needed
-      };
-      await this.firestoreService.createService(serviceData);
+      const currentUser = await this.authService.getCurrentUser().toPromise();
+      if (currentUser && currentUser.id) {
+        const serviceData = {
+          ...this.createServiceForm.value,
+          providerId: currentUser.id,
+          imageUrl: this.imagenUsuario ? URL.createObjectURL(this.imagenUsuario) : ''
+        };
+        await this.firestoreService.createService(serviceData);
+      }
     }
   }
+
+  // async onSubmit() {
+  //   if (this.createServiceForm.valid) {
+  //     const serviceData = {
+  //       ...this.createServiceForm.value,
+  //       imageUrl: ''
+  //     };
+  //     await this.firestoreService.createService(serviceData);
+  //   }
+  // }
 
 
 }
