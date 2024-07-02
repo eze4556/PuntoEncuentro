@@ -34,6 +34,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/horarios/horarios.component').then(m => m.ScheduleConfigComponent),
       },
       {
+        path: 'crearServicio',
+        loadComponent: () => import('./components/create-service/create-service.component').then(m => m.CreateServiceComponent),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

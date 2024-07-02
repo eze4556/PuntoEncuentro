@@ -1,0 +1,81 @@
+import { IonicModule } from '@ionic/angular';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FirestoreService } from '../../common/services/firestore.service';
+import { AuthService } from '../../common/services/auth.service';
+import { CommonModule } from '@angular/common';
+import { environment } from 'src/environments/environment';
+
+
+@Component({
+  selector: 'app-create-service',
+  templateUrl: './create-service.component.html',
+  styleUrls: ['./create-service.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    IonicModule,
+    FormsModule,
+    ReactiveFormsModule
+  ]
+})
+export class CreateServiceComponent  implements OnInit {
+
+  createServiceForm: FormGroup;
+    selectedFile: File | null = null;
+  imagenUsuario: File | null = null;
+
+
+   constructor(
+    private fb: FormBuilder,
+    private firestoreService: FirestoreService,
+    private authService: AuthService
+  ) {
+    this.createServiceForm = this.fb.group({
+      nombreEmpresa: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      description: ['', Validators.required],
+      telefono: ['', Validators.required],
+      category: ['', Validators.required],
+      horarios: ['', Validators.required],
+      sobreNosotros: ['', Validators.required],
+      price: ['', [Validators.required, Validators.min(0)]],
+      servicio: ['', Validators.required],
+      dirreccion: ['', Validators.required],
+      imagen: ['']
+    });
+  }
+
+  ngOnInit(): void {}
+
+
+  onFileSelected(event: any) {
+    this.imagenUsuario = event.target.files[0];
+  }
+
+  // async onSubmit() {
+  //   if (this.createServiceForm.valid) {
+  //     const currentUser = await this.authService.getCurrentUser().toPromise();
+  //     if (currentUser && currentUser.id) {
+  //       const serviceData = {
+  //         ...this.createServiceForm.value,
+  //         providerId: currentUser.id,
+  //         imageUrl: this.imagenUsuario ? URL.createObjectURL(this.imagenUsuario) : ''
+  //       };
+  //       await this.firestoreService.createService(serviceData);
+  //     }
+  //   }
+  // }
+
+  async onSubmit() {
+    if (this.createServiceForm.valid) {
+      const serviceData = {
+        ...this.createServiceForm.value,
+        imageUrl: ''  // Placeholder for image URL if needed
+      };
+      await this.firestoreService.createService(serviceData);
+    }
+  }
+
+
+}

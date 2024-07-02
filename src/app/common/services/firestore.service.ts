@@ -7,6 +7,8 @@ const { v4: uuidv4 } = require('uuid');
 import { User } from '../models/users.models';
 import { Citas } from '../models/cita.model';
 import { Reviews } from '../models/reviews.model';
+import { Service } from '../models/service.models';
+
 
 // Convertidor genérico para Firestore
 const converter = <T>() => ({
@@ -133,5 +135,31 @@ export class FirestoreService {
 
     return resenas;
   }
+
+
+//crear Servicio
+
+ async createService(service: Service): Promise<void> {
+    const serviceId = this.createIdDoc();
+    service.id = serviceId;
+    const serviceRef = doc(this.firestore, `services/${serviceId}`).withConverter(converter<Service>());
+    await setDoc(serviceRef, service);
+  }
+
+
+async getServices(): Promise<Service[]>{
+const servicesRef = collection(this.firestore, 'services') as CollectionReference<Service>;
+const querySnapshot = await getDocs(servicesRef);
+const services: Service[]=[];
+querySnapshot.forEach((doc)=> {
+services.push(doc.data());
+})
+return services;
+}
+
+
+
+
+
 }
 
