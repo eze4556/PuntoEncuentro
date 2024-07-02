@@ -29,9 +29,19 @@ export class AuthService {
     ).subscribe(userData => this.userSubject.next(userData));
   }
 
-  async login(email: string, password: string): Promise<firebase.auth.UserCredential> {
-    return await this.afAuth.signInWithEmailAndPassword(email, password);
+  // async login(email: string, password: string): Promise<firebase.auth.UserCredential> {
+  //   return await this.afAuth.signInWithEmailAndPassword(email, password);
+  //    await this.updateUserLocation(credential.user);
+  //   return credential;
+  // }
+
+
+ async login(email: string, password: string): Promise<firebase.auth.UserCredential> {
+    const credential = await this.afAuth.signInWithEmailAndPassword(email, password);
+    await this.updateUserLocation(credential.user);
+    return credential;
   }
+
 
   async logout(): Promise<void> {
     return await this.afAuth.signOut();
@@ -45,6 +55,10 @@ export class AuthService {
   const provider = new firebase.auth.GoogleAuthProvider();
   const credential = await this.afAuth.signInWithPopup(provider);
   await this.updateUserData(credential.user);
+
+    await this.updateUserLocation(credential.user);
+
+
   return credential;
 }
 
@@ -52,8 +66,32 @@ async loginWithFacebook(): Promise<firebase.auth.UserCredential> {
   const provider = new firebase.auth.FacebookAuthProvider();
   const credential = await this.afAuth.signInWithPopup(provider);
   await this.updateUserData(credential.user);
+
+      await this.updateUserLocation(credential.user);
+
   return credential;
 }
+
+
+private async updateUserLocation(user: firebase.User | null): Promise<void> {
+    if (user) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const userRef = this.firestore.collection('usuarios').doc(user.uid);
+          const location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          await userRef.update({ location });
+        }, (error) => {
+          console.error('Error obtaining location', error);
+        });
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+      }
+    }
+  }
 
 private async updateUserData(user: firebase.User | null): Promise<void> {
   if (user) {
@@ -68,6 +106,7 @@ private async updateUserData(user: firebase.User | null): Promise<void> {
         tipo_usuario: 'cliente',
         fecha_registro: firebase.firestore.FieldValue.serverTimestamp() as any
       };
+      console.log('Setting new user data:', data);
       await userRef.set(data);
     }
   }
@@ -84,6 +123,8 @@ private async updateUserData(user: firebase.User | null): Promise<void> {
         tipo_usuario: tipo_usuario,
         fecha_registro: firebase.firestore.FieldValue.serverTimestamp()
       });
+      await this.updateUserLocation(userCredential.user);
+
     }
   }
 
