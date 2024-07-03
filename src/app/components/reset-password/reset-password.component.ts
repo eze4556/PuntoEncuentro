@@ -29,7 +29,6 @@ export class ResetPasswordComponent  implements OnInit {
   ) {}
 
  ngOnInit(): void {
-    // Aquí puedes agregar cualquier lógica de inicialización que necesites
     console.log('ResetPasswordComponent initialized');
   }
 
