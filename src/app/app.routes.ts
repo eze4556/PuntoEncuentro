@@ -5,10 +5,10 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./views/login/login.component').then((m) => m.LoginComponent),
   },
-  {
-    path: 'home',
-    loadComponent: () => import('./views/home/home.page').then((m) => m.HomePage),
-  },
+  // {
+  //   path: 'home',
+  //   loadComponent: () => import('./views/home/home.page').then((m) => m.HomePage),
+  // },
   {
     path: 'perfil',
     loadComponent: () => import('./views/profile/profile.component').then((m) => m.ProfileComponent),
