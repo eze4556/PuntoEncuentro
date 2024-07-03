@@ -157,8 +157,20 @@ services.push(doc.data());
 return services;
 }
 
-
-
+async getUserByEmail(email: string): Promise<User | undefined> {
+  try {
+    const usersRef = collection(this.firestore, 'usuarios') as CollectionReference<User>;
+    const userQuery = query(usersRef, where('correo', '==', email));
+    const querySnapshot = await getDocs(userQuery);
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].data();
+    }
+    return undefined;
+  } catch (error) {
+    console.error('Error fetching user by email:', error);
+    throw error;
+  }
+}
 
 
 }
