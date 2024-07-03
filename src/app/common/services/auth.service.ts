@@ -47,9 +47,7 @@ export class AuthService {
     return await this.afAuth.signOut();
   }
 
-  async resetPassword(email: string): Promise<void> {
-    return await this.afAuth.sendPasswordResetEmail(email);
-  }
+  
 
  async loginWithGoogle(): Promise<firebase.auth.UserCredential> {
   const provider = new firebase.auth.GoogleAuthProvider();
@@ -127,6 +125,12 @@ private async updateUserData(user: firebase.User | null): Promise<void> {
 
     }
   }
+
+
+  async resetPassword(email: string): Promise<void> {
+  return await this.afAuth.sendPasswordResetEmail(email);
+}
+
 
   getCurrentUser(): Observable<User | null> {
     return this.user$;

@@ -125,4 +125,14 @@ goToHome() {
   this.router.navigate(['/home']);
 }
 
+goToPassword() {
+  this.router.navigate(['/recuperarPassword']);
+}
+
+goToEmail() {
+  this.router.navigate(['/recuperarEmail']);
+}
+
+
+
 }
