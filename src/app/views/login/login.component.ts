@@ -15,23 +15,25 @@ import {
   IonToolbar,
   IonIcon,
   IonTitle,
-  IonHeader, IonBackButton, IonButtons,IonSpinner, IonSelectOption, IonSelect, IonSegment, IonSegmentButton, IonImg } from '@ionic/angular/standalone';
+  IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect, IonSegment, IonSegmentButton, IonImg
+} from '@ionic/angular/standalone';
 import { Component, OnInit, Input } from '@angular/core';
 import { FirestoreService } from '../../common/services/firestore.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {AuthService} from '../../common/services/auth.service'
+import { AuthService } from '../../common/services/auth.service';
 import { AlertController } from '@ionic/angular';
-
+import { User } from 'src/app/common/models/users.models';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
- standalone: true,
-  imports: [IonImg, IonSegmentButton, IonSegment, IonSpinner, IonButtons, IonBackButton,
+  standalone: true,
+  imports: [
+    IonImg, IonSegmentButton, IonSegment, IonSpinner, IonButtons, IonBackButton,
     IonHeader,
     IonTitle,
     IonIcon,
@@ -54,25 +56,25 @@ import { AlertController } from '@ionic/angular';
     IonSelectOption,
     IonSelect,
     IonButton
-
   ],
 })
-export class LoginComponent   {
+export class LoginComponent {
 
   email: string;
   password: string;
 
-
-  constructor( private authService: AuthService,
+  constructor(
+    private authService: AuthService,
+    private firestoreService: FirestoreService,
     private router: Router,
-    private alertController: AlertController) { }
+    private alertController: AlertController
+  ) { }
 
-  // ngOnInit() {}
-
-async login() {
+  async login() {
     try {
-      await this.authService.login(this.email, this.password);
-      this.router.navigate(['/home']);
+      const userCredential = await this.authService.login(this.email, this.password);
+      const user = await this.firestoreService.getUserByEmail(this.email);
+      this.redirectUser(user);
     } catch (error) {
       const alert = await this.alertController.create({
         header: 'Error',
@@ -85,8 +87,9 @@ async login() {
 
   async loginWithGoogle() {
     try {
-      await this.authService.loginWithGoogle();
-      this.router.navigate(['/home']);
+      const userCredential = await this.authService.loginWithGoogle();
+      const user = await this.firestoreService.getUserByEmail(userCredential.user.email);
+      this.redirectUser(user);
     } catch (error) {
       const alert = await this.alertController.create({
         header: 'Error',
@@ -99,8 +102,9 @@ async login() {
 
   async loginWithFacebook() {
     try {
-      await this.authService.loginWithFacebook();
-      this.router.navigate(['/home']);
+      const userCredential = await this.authService.loginWithFacebook();
+      const user = await this.firestoreService.getUserByEmail(userCredential.user.email);
+      this.redirectUser(user);
     } catch (error) {
       const alert = await this.alertController.create({
         header: 'Error',
@@ -111,28 +115,46 @@ async login() {
     }
   }
 
+  redirectUser(user: User) {
+    if (user) {
+      switch (user.tipo_usuario) {
+        case 'cliente':
+          this.router.navigate(['/homeCliente']);
+          break;
+        case 'proveedor':
+        case 'admin':
+          this.router.navigate(['/perfil']);
+          break;
+        default:
+          this.showAlert('Error', 'Tipo de usuario desconocido');
+      }
+    } else {
+      this.showAlert('Error', 'Usuario no encontrado');
+    }
+  }
+
+  async showAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
 
   goToResetPassword() {
     this.router.navigate(['/reset-password']);
   }
 
+  goToRegister() {
+    this.router.navigate(['/register']);
+  }
 
-goToRegister() {
-  this.router.navigate(['/register']);
-}
+  goToPassword() {
+    this.router.navigate(['/recuperarPassword']);
+  }
 
-goToHome() {
-  this.router.navigate(['/home']);
-}
-
-goToPassword() {
-  this.router.navigate(['/recuperarPassword']);
-}
-
-goToEmail() {
-  this.router.navigate(['/recuperarEmail']);
-}
-
-
-
+  goToEmail() {
+    this.router.navigate(['/recuperarEmail']);
+  }
 }

@@ -13,11 +13,6 @@ export const routes: Routes = [
     path: 'recuperarEmail',
     loadComponent: () => import('./components/recovery-email/recovery-email.component').then((m) => m.RecoveryEmailComponent),
   },
-
-  // {
-  //   path: 'home',
-  //   loadComponent: () => import('./views/home/home.page').then((m) => m.HomePage),
-  // },
   {
     path: 'perfil',
     loadComponent: () => import('./views/profile/profile.component').then((m) => m.ProfileComponent),
