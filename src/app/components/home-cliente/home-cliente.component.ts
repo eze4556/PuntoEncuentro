@@ -21,6 +21,7 @@ import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Service } from 'src/app/common/models/service.models';
 
 @Component({
   selector: 'app-home-cliente',
@@ -55,8 +56,29 @@ import { Router } from '@angular/router';
 
 export class HomeClienteComponent  {
 
+ services: Service[] = [];
+  filteredServices: Service[] = [];
 
-  constructor(private router: Router) { }
+  constructor(private router: Router,private firestoreService: FirestoreService) { }
+
+   ngOnInit() {
+    this.loadServices();
+  }
+
+  async loadServices() {
+    this.services = await this.firestoreService.getServices();
+    this.filteredServices = this.services; // Initially, all services are shown
+  }
+
+  filterServices(event: any) {
+    const searchTerm = event.target.value.toLowerCase();
+    this.filteredServices = this.services.filter(service =>
+      service.nombreEmpresa.toLowerCase().includes(searchTerm) ||
+      service.description.toLowerCase().includes(searchTerm) ||
+      service.category.toLowerCase().includes(searchTerm)
+    );
+  }
+
 
   goToService() {
   this.router.navigate(['/serviceDetail']);
