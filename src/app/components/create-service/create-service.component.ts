@@ -51,6 +51,8 @@ export class CreateServiceComponent  implements OnInit {
 
   onFileSelected(event: any) {
     this.imagenUsuario = event.target.files[0];
+      console.log('Imagen seleccionada:', this.imagenUsuario); // Añadir este log para verificar que se selecciona la imagen correctamente
+
   }
 
   async onSubmit() {
@@ -60,7 +62,7 @@ export class CreateServiceComponent  implements OnInit {
         const serviceData = {
           ...this.createServiceForm.value,
           providerId: currentUser.id,
-          imageUrl: this.imagenUsuario ? URL.createObjectURL(this.imagenUsuario) : ''
+          imagen: this.imagenUsuario ? URL.createObjectURL(this.imagenUsuario) : ''
         };
         await this.firestoreService.createService(serviceData);
       }
