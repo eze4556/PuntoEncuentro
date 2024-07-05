@@ -4,4 +4,5 @@ export interface User {
   correo: string;
   tipo_usuario: 'cliente' | 'proveedor' | 'admin'
   fecha_registro: Date;
+  imagen?: string;
 }

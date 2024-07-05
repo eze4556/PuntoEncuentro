@@ -1,14 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue, collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference, DocumentSnapshot, QueryDocumentSnapshot, query, where } from '@angular/fire/firestore'; // Importar query y where
-
+import { Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue, collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference, DocumentSnapshot, QueryDocumentSnapshot, query, where } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 const { v4: uuidv4 } = require('uuid');
 
 import { User } from '../models/users.models';
 import { Citas } from '../models/cita.model';
 import { Reviews } from '../models/reviews.model';
 import { Service } from '../models/service.models';
-
 
 // Convertidor genérico para Firestore
 const converter = <T>() => ({
@@ -136,44 +135,45 @@ export class FirestoreService {
     return resenas;
   }
 
+  async createService(service: Service): Promise<void> {
+    const serviceId = this.createIdDoc();
+    service.id = serviceId;
+    console.log('Creando servicio con ID:', serviceId);
+    const serviceRef = doc(this.firestore, `services/${serviceId}`).withConverter(converter<Service>());
+    await setDoc(serviceRef, service);
+    console.log('Servicio creado en Firestore:', service);
+  }
 
-//crear Servicio
+  async getServices(): Promise<Service[]> {
+    const servicesRef = collection(this.firestore, 'services') as CollectionReference<Service>;
+    const querySnapshot = await getDocs(servicesRef);
+    const services: Service[] = [];
+    querySnapshot.forEach((doc) => {
+      services.push(doc.data());
+    });
+    return services;
+  }
 
-async createService(service: Service): Promise<void> {
-  const serviceId = this.createIdDoc();
-  service.id = serviceId;
-  console.log('Creando servicio con ID:', serviceId);
-  const serviceRef = doc(this.firestore, `services/${serviceId}`).withConverter(converter<Service>());
-  await setDoc(serviceRef, service);
-  console.log('Servicio creado en Firestore:', service);
-}
-
-
-async getServices(): Promise<Service[]>{
-const servicesRef = collection(this.firestore, 'services') as CollectionReference<Service>;
-const querySnapshot = await getDocs(servicesRef);
-const services: Service[]=[];
-querySnapshot.forEach((doc)=> {
-services.push(doc.data());
-})
-return services;
-}
-
-async getUserByEmail(email: string): Promise<User | undefined> {
-  try {
-    const usersRef = collection(this.firestore, 'usuarios') as CollectionReference<User>;
-    const userQuery = query(usersRef, where('correo', '==', email));
-    const querySnapshot = await getDocs(userQuery);
-    if (!querySnapshot.empty) {
-      return querySnapshot.docs[0].data();
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    try {
+      const usersRef = collection(this.firestore, 'usuarios') as CollectionReference<User>;
+      const userQuery = query(usersRef, where('correo', '==', email));
+      const querySnapshot = await getDocs(userQuery);
+      if (!querySnapshot.empty) {
+        return querySnapshot.docs[0].data();
+      }
+      return undefined;
+    } catch (error) {
+      console.error('Error fetching user by email:', error);
+      throw error;
     }
-    return undefined;
-  } catch (error) {
-    console.error('Error fetching user by email:', error);
-    throw error;
+  }
+
+  getServiceByProviderId(providerId: string): Observable<Service> {
+    const servicesRef = collection(this.firestore, 'services') as CollectionReference<Service>;
+    const serviceQuery = query(servicesRef, where('providerId', '==', providerId));
+    return collectionData(serviceQuery, { idField: 'id' }).pipe(
+      map((services: Service[]) => services[0]) // assuming one service per provider
+    );
   }
 }
-
-
-}
-

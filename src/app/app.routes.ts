@@ -30,8 +30,8 @@ export const routes: Routes = [
         loadComponent: () => import('./components/historial-resenas/historial-resenas.component').then((m) => m.HistorialResenasComponent),
       },
       {
-        path: 'perfilEmpresa',
-        loadComponent: () => import('./components/perfil-empresa/perfil-empresa.component').then((m) => m.PerfilEmpresaComponent),
+        path: 'perfilUsuario',
+        loadComponent: () => import('./components/perfil/profile.component').then((m) => m.ProfileComponent),
       },
       {
         path: 'horarios',
