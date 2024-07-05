@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title class="ion-text-center">{{ service?.nombreEmpresa || 'Clínica Dental Sonrisas' }}</ion-title>
+    <ion-title class="ion-text-center">{{ service?.nombreEmpresa.toUpperCase() }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -12,44 +12,53 @@
     <ion-row class="ion-justify-content-center">
       <ion-col size="6" size-md="6">
         <ion-avatar class="logo">
-          <img [src]="service?.imagen || '../../../assets/images.jpeg'" alt="Imagen de {{ service?.nombreEmpresa || 'la clínica dental Sonrisas' }}" class="main-image" />
+          <img [src]="service.imageUrl" alt="{{ service.nombreEmpresa }}" />
         </ion-avatar>
       </ion-col>
     </ion-row>
   </ion-grid>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-subtitle>Información de contacto</ion-card-subtitle>
-      <ion-card-title>Dirección: {{ service?.direccion }}</ion-card-title>
+  <!-- <ion-card class="info-card">
+    <ion-card-header class="info-card-header">
+      <ion-card-subtitle class="info-card-subtitle">Información de contacto</ion-card-subtitle>
+      <ion-card-title class="info-card-title ion-text-center">{{ service?.nombreEmpresa.toUpperCase() }}</ion-card-title>
     </ion-card-header>
-    <ion-card-content>
-      <p>Teléfono: {{ service?.telefono }}</p>
-      <p>Email: {{ service?.email }}</p>
-      <p>Horario de atención:</p>
-      <ul>
-        <li *ngFor="let horario of service?.horarios">{{ horario }}</li>
-      </ul>
+    <ion-card-content class="info-card-content">
+      <p><ion-icon name="location-outline"></ion-icon> Dirección: {{ service?.dirreccion }}</p>
+      <p><ion-icon name="call-outline"></ion-icon> Teléfono: {{ service?.telefono }}</p>
+      <p><ion-icon name="mail-outline"></ion-icon> Email: {{ service?.email }}</p>
+    </ion-card-content>
+  </ion-card> -->
+
+   <ion-card class="info-card">
+    <ion-card-header class="info-card-header">
+      <ion-card-subtitle class="info-card-subtitle">Información de contacto</ion-card-subtitle>
+      <ion-card-title class="info-card-title ion-text-center">{{ service?.nombreEmpresa.toUpperCase() }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="info-card-content">
+      <p>
+        <ion-icon name="location-outline"></ion-icon>
+        Dirección:
+        <a [href]="getGoogleMapsUrl(service?.dirreccion)" target="_blank">{{ service?.dirreccion }}</a>
+      </p>
+      <p><ion-icon name="call-outline"></ion-icon> Teléfono: {{ service?.telefono }}</p>
+      <p><ion-icon name="mail-outline"></ion-icon> Email: {{ service?.email }}</p>
     </ion-card-content>
   </ion-card>
 
-  <ion-card class="info-card">
-    <ion-card-header class="info-card-header">
-      <ion-card-subtitle class="info-card-subtitle">Información de contacto</ion-card-subtitle>
-      <ion-card-title class="info-card-title">Dirección: {{ service?.direccion }}</ion-card-title>
+   <ion-card class="horarios-card">
+    <ion-card-header>
+      <ion-card-title>Horario de atención</ion-card-title>
     </ion-card-header>
-    <ion-card-content class="info-card-content">
-      <p><ion-icon name="call-outline"></ion-icon> Teléfono: {{ service?.telefono }}</p>
-      <p><ion-icon name="mail-outline"></ion-icon> Email: {{ service?.email }}</p>
-      <ion-item lines="none">
-        <ion-icon name="time-outline" slot="start"></ion-icon>
-        <ion-label>Horario de atención:</ion-label>
-      </ion-item>
-      <ion-list inset="true">
-        <ion-item *ngFor="let horario of service?.horarios">{{ horario }}</ion-item>
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item *ngFor="let horario of sortedHorarios">
+          {{ formatHorario(horario) }}
+        </ion-item>
       </ion-list>
     </ion-card-content>
   </ion-card>
+
 
   <ion-card class="service-card">
     <ion-card-header class="service-card-header">
@@ -57,9 +66,7 @@
     </ion-card-header>
     <ion-card-content class="service-card-content">
       <ion-list lines="none">
-        <ion-item *ngFor="let servicio of service?.servicio">
-          {{ servicio }}
-        </ion-item>
+        <ion-item>{{ service.servicio }}</ion-item>
       </ion-list>
     </ion-card-content>
   </ion-card>
@@ -69,10 +76,11 @@
       <ion-card-title class="about-card-title">Sobre nosotros</ion-card-title>
     </ion-card-header>
     <ion-card-content class="about-card-content">
-      <p>{{ service?.description || 'En Clínica Dental Sonrisas, nos apasiona cuidar de tu salud bucal. Nuestro equipo de profesionales altamente capacitados te brindará la mejor atención y los tratamientos más avanzados para que puedas lucir una sonrisa radiante.' }}</p>
+      <p>{{ service?.description }}</p>
     </ion-card-content>
   </ion-card>
 
   <app-reviews [servicioId]="serviceId"></app-reviews>
+
   <ion-button expand="block" color="primary" class="book-button" (click)="navigateToCita()">Reservar Cita</ion-button>
 </ion-content>

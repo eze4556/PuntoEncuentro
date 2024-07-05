@@ -3,6 +3,9 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonHeader, IonItem, IonButton, IonToolbar, IonContent, IonLabel, IonRow, IonGrid, IonCol, IonTitle, IonCheckbox, IonText, IonSelect, IonSelectOption, IonInput } from '@ionic/angular/standalone';
+import {User} from '../../common/models/users.models'
+import { AuthService } from 'src/app/common/services/auth.service';
+
 
 @Component({
   selector: 'app-schedule-config',
@@ -41,8 +44,21 @@ export class ScheduleConfigComponent {
 
   timeSlots: string[] = [];
 
-  constructor(private firestore: AngularFirestore) {
+    userId: string | null = null;
+     horarios: any[] = [];
+
+
+  constructor(private firestore: AngularFirestore,private authService: AuthService) {
     this.initializeTimeSlots();
+  }
+
+  ngOnInit() {
+    this.authService.getCurrentUser().subscribe((user: User | null) => {
+      if (user) {
+        this.userId = user.id;
+        this.loadHorarios();
+      }
+    });
   }
 
   initializeTimeSlots() {
@@ -61,7 +77,7 @@ export class ScheduleConfigComponent {
 
   saveSchedule() {
     const schedule = {
-      userId: 'testUserId',  // Valor de prueba
+      userId:this.userId,
       selectedDays: this.selectedDays,
       startTime: this.startTime,
       endTime: this.endTime,
@@ -81,5 +97,16 @@ export class ScheduleConfigComponent {
       .catch(error => {
         console.error('Error al guardar el horario: ', error);
       });
+  }
+
+   loadHorarios() {
+    if (this.userId) {
+      this.firestore.collection('horarios', ref => ref.where('userId', '==', this.userId))
+        .valueChanges({ idField: 'id' })
+        .subscribe((horarios: any[]) => {
+          this.horarios = horarios;
+          console.log('Horarios cargados:', this.horarios);
+        });
+    }
   }
 }

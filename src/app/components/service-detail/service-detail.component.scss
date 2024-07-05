@@ -51,3 +51,45 @@ ion-item {
 .book-button {
   margin: 16px;
 }
+
+
+
+.logo {
+  width: 200px; /* Ajusta el ancho según el tamaño de tu logo */
+  height: auto;  /* Mantén la proporción de aspecto */
+  margin-bottom: 20px;
+}
+
+.info-card, .service-card, .about-card {
+  margin: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+.info-card-header, .service-card-header, .about-card-header {
+  padding: 16px;
+  background-color: #34a1cc; // Color de fondo gris claro para los encabezados
+  color: white; // Texto blanco para contrastar
+}
+
+.info-card-title, .service-card-title, .about-card-title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.info-card-subtitle {
+  font-size: 0.9em;
+  color: #ccc;
+}
+
+.info-card-content, .service-card-content, .about-card-content {
+  padding: 16px;
+}
+
+ion-item {
+  --padding-start: 0;
+}
+
+.book-button {
+  margin: 16px;
+}

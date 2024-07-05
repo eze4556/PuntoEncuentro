@@ -13,10 +13,13 @@
   <ion-list>
     <ion-item *ngFor="let service of filteredServices" (click)="goToService(service.id)">
       <ion-avatar slot="start">
-        <img [src]="service.imagen || '../../../assets/images.jpeg'" alt="{{service.nombreEmpresa}}" />
+        <img [src]="service.imageUrl" alt="{{service.nombreEmpresa}}" />
       </ion-avatar>
       <ion-label>
         <h2>{{ service.nombreEmpresa }}</h2>
+                <p>{{ service.price | currency }}</p>
+                        <p>{{ service.servicio }}</p>
+
         <p>{{ service.description }}</p>
       </ion-label>
     </ion-item>
