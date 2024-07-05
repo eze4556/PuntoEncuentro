@@ -17,7 +17,7 @@
           </ion-item>
 
           <!-- Perfil: Para Cliente y Proveedor -->
-          <ion-item *ngIf="user?.tipo_usuario === 'cliente' || user?.tipo_usuario === 'proveedor'" [routerLink]="['/perfil/perfilEmpresa']" (click)="selectOption('perfilEmpresa')">
+          <ion-item *ngIf="user?.tipo_usuario === 'cliente' || user?.tipo_usuario === 'proveedor'" [routerLink]="['/perfil/perfilUsuario']" (click)="selectOption('perfilUsuario')">
             <ion-icon name="briefcase" slot="start"></ion-icon>
             <ion-label>Perfil</ion-label>
           </ion-item>
