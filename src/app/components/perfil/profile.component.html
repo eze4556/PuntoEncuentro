@@ -38,7 +38,7 @@
       <ion-row class="ion-justify-content-center">
         <ion-col size="12" size-md="8">
           <ion-avatar class="logo">
-            <img [src]="service?.imagen" alt="Imagen de la empresa" class="main-image" />
+            <img [src]="service.imageUrl" alt="Imagen de la empresa" class="main-image" />
           </ion-avatar>
         </ion-col>
       </ion-row>
@@ -47,7 +47,7 @@
     <ion-card class="info-card">
       <ion-card-header class="info-card-header">
         <ion-card-subtitle class="info-card-subtitle">Información de contacto</ion-card-subtitle>
-        <ion-card-title class="info-card-title">Dirección: {{ service?.direccion }}</ion-card-title>
+        <ion-card-title class="info-card-title">Dirección: {{ service?.dirreccion }}</ion-card-title>
       </ion-card-header>
       <ion-card-content class="info-card-content">
         <p><ion-icon name="call-outline"></ion-icon> Teléfono: {{ service?.telefono }}</p>
