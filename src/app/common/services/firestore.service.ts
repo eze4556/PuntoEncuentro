@@ -139,12 +139,14 @@ export class FirestoreService {
 
 //crear Servicio
 
- async createService(service: Service): Promise<void> {
-    const serviceId = this.createIdDoc();
-    service.id = serviceId;
-    const serviceRef = doc(this.firestore, `services/${serviceId}`).withConverter(converter<Service>());
-    await setDoc(serviceRef, service);
-  }
+async createService(service: Service): Promise<void> {
+  const serviceId = this.createIdDoc();
+  service.id = serviceId;
+  console.log('Creando servicio con ID:', serviceId);
+  const serviceRef = doc(this.firestore, `services/${serviceId}`).withConverter(converter<Service>());
+  await setDoc(serviceRef, service);
+  console.log('Servicio creado en Firestore:', service);
+}
 
 
 async getServices(): Promise<Service[]>{

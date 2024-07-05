@@ -4,8 +4,8 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import { CommonModule } from '@angular/common';
 import { FirestoreService } from '../../common/services/firestore.service';
 import { AuthService } from '../../common/services/auth.service';
-import { environment } from 'src/environments/environment';
-
+import { CategoryI } from '../../common/models/categoria.model';
+import { User } from 'src/app/common/models/users.models';
 
 @Component({
   selector: 'app-create-service',
@@ -19,14 +19,15 @@ import { environment } from 'src/environments/environment';
     ReactiveFormsModule
   ]
 })
-export class CreateServiceComponent  implements OnInit {
+export class CreateServiceComponent implements OnInit {
 
   createServiceForm: FormGroup;
-    selectedFile: File | null = null;
+  categories: CategoryI[] = [];
+  selectedFile: File | null = null;
   imagenUsuario: File | null = null;
+  currentUser: User | null = null;  // Añadido
 
-
-   constructor(
+  constructor(
     private fb: FormBuilder,
     private firestoreService: FirestoreService,
     private authService: AuthService
@@ -46,8 +47,20 @@ export class CreateServiceComponent  implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadCategories();
+    this.authService.getCurrentUser().subscribe(user => {
+      this.currentUser = user;
+    });
+  }
 
+  loadCategories() {
+    this.firestoreService.getCollectionChanges<CategoryI>('Categorías').subscribe(data => {
+      if (data) {
+        this.categories = data;
+      }
+    });
+  }
 
   onFileSelected(event: any) {
     this.imagenUsuario = event.target.files[0];
@@ -55,27 +68,25 @@ export class CreateServiceComponent  implements OnInit {
 
   async onSubmit() {
     if (this.createServiceForm.valid) {
-      const currentUser = await this.authService.getCurrentUser().toPromise();
-      if (currentUser && currentUser.id) {
+      console.log('Formulario válido, procesando...');
+      if (this.currentUser && this.currentUser.id) {
         const serviceData = {
           ...this.createServiceForm.value,
-          providerId: currentUser.id,
+          providerId: this.currentUser.id,
           imageUrl: this.imagenUsuario ? URL.createObjectURL(this.imagenUsuario) : ''
         };
-        await this.firestoreService.createService(serviceData);
+        console.log('Datos del servicio:', serviceData);
+        try {
+          await this.firestoreService.createService(serviceData);
+          console.log('Servicio creado con éxito');
+        } catch (error) {
+          console.error('Error al crear el servicio:', error);
+        }
+      } else {
+        console.error('No se pudo obtener el ID del usuario');
       }
+    } else {
+      console.error('Formulario inválido');
     }
   }
-
-  // async onSubmit() {
-  //   if (this.createServiceForm.valid) {
-  //     const serviceData = {
-  //       ...this.createServiceForm.value,
-  //       imageUrl: ''
-  //     };
-  //     await this.firestoreService.createService(serviceData);
-  //   }
-  // }
-
-
 }

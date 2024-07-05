@@ -14,22 +14,36 @@ import {
   IonCardContent,
   IonToolbar,
   IonTitle,
-  IonHeader,IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect, IonCardSubtitle, IonAvatar, IonIcon } from '@ionic/angular/standalone';
-import { Component, OnInit, Input } from '@angular/core';
+  IonHeader,
+  IonBackButton,
+  IonButtons,
+  IonSpinner,
+  IonSelectOption,
+  IonSelect,
+  IonCardSubtitle,
+  IonAvatar,
+  IonIcon,
+} from '@ionic/angular/standalone';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FirestoreService } from '../../common/services/firestore.service';
-import { Observable } from 'rxjs';
+import { Service } from 'src/app/common/models/service.models';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ReviewsComponent } from '../reviews/reviews.component';
-
 
 @Component({
   selector: 'app-service-detail',
   templateUrl: './service-detail.component.html',
   styleUrls: ['./service-detail.component.scss'],
   standalone: true,
-  imports: [IonIcon, IonAvatar, IonCardSubtitle, IonSpinner, IonButtons, IonBackButton,
+  imports: [
+    IonIcon,
+    IonAvatar,
+    IonCardSubtitle,
+    IonSpinner,
+    IonButtons,
+    IonBackButton,
     IonHeader,
     IonTitle,
     IonToolbar,
@@ -51,19 +65,33 @@ import { ReviewsComponent } from '../reviews/reviews.component';
     IonSelectOption,
     IonSelect,
     IonButton,
-    ReviewsComponent
+    ReviewsComponent,
   ],
 })
+export class ServiceDetailComponent implements OnInit {
+  service: Service | null = null;
+  serviceId: string | null = null;
 
-export class ServiceDetailComponent   {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private firestoreService: FirestoreService
+  ) {}
 
-  constructor(private router: Router) { }
-
-  navigateToReview() {
-    this.router.navigate(['/review']);
+  ngOnInit() {
+    this.route.paramMap.subscribe((params) => {
+      this.serviceId = params.get('id');
+      if (this.serviceId) {
+        this.loadService(this.serviceId);
+      }
+    });
   }
+
+  async loadService(serviceId: string) {
+    this.service = await this.firestoreService.getDocumentById('services', serviceId) as Service;
+  }
+
   navigateToCita() {
-    this.router.navigate(['/cita']);
+    this.router.navigate(['/cita', this.serviceId]);
   }
-
 }

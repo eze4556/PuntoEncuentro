@@ -10,7 +10,6 @@ export interface Service {
   sobreNosotros: string;
   price: number;
   servicio: string;
- dirreccion: string;
- imagen: string;   
-
+  direccion: string;
+  imagen: string;
 }

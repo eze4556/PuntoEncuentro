@@ -1,26 +1,67 @@
 import { IonButtons, IonBackButton, IonHeader, IonTitle, IonToolbar, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardContent, IonSelectOption, IonSelect, IonButton, IonAvatar, IonRouterOutlet, IonCardSubtitle, IonDatetime } from '@ionic/angular/standalone';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FirestoreService } from '../../common/services/firestore.service';
 import { Citas } from '../../common/models/cita.model';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../common/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-cita',
   standalone: true,
-  imports: [IonButtons, IonBackButton, IonHeader, IonToolbar, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardContent, IonSelectOption, IonSelect, IonButton, IonRouterOutlet, IonTitle, IonAvatar, IonCardSubtitle, IonDatetime, CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    IonButtons,
+    IonBackButton,
+    IonHeader,
+    IonToolbar,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonCard,
+    IonCardHeader,
+    IonCardContent,
+    IonSelectOption,
+    IonSelect,
+    IonButton,
+    IonRouterOutlet,
+    IonTitle,
+    IonAvatar,
+    IonCardSubtitle,
+    IonDatetime,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './cita.component.html',
   styleUrls: ['./cita.component.scss']
 })
-export class CitaComponent {
+export class CitaComponent implements OnInit {
   selectedDate: string = '';
   selectedSlot: string = '';
   availableSlots: string[] = [];
   serviceSchedule: any = {};
   existingAppointments: Citas[] = [];
+  serviceId: string | null = null;
+  currentUser: any = null; // Ajustar según el tipo de usuario
 
-  constructor(private firestoreService: FirestoreService) {
+  constructor(
+    private firestoreService: FirestoreService,
+    private authService: AuthService,
+    private route: ActivatedRoute
+  ) {
     this.fetchServiceSchedule();
+  }
+
+  ngOnInit() {
+    this.route.paramMap.subscribe((params) => {
+      this.serviceId = params.get('id');
+    });
+
+    this.authService.getCurrentUser().subscribe(user => {
+      this.currentUser = user;
+    });
   }
 
   async fetchServiceSchedule() {
@@ -127,25 +168,30 @@ export class CitaComponent {
   }
 
   async confirmAppointment() {
-    try {
-      const [date] = this.selectedDate.split('T');
-      const dateTimeString = `${date}T${this.selectedSlot}:00`;
+    if (this.currentUser && this.serviceId) {
+        try {
+            const [date] = this.selectedDate.split('T');
+            const dateTimeString = `${date}T${this.selectedSlot}:00`;
 
-      const cita: Citas = {
-        id: this.firestoreService.createIdDoc(),
-        servicio_id: 'servicioId',
-        cliente_id: 'user.uid',
-        proveedor_id: 'proveedorId',
-        fecha_cita: dateTimeString,
-        estado: 'pendiente',
-        notas: ''
-      };
+            const cita: Citas = {
+                id: this.firestoreService.createIdDoc(),
+                servicio_id: this.serviceId,
+                cliente_id: this.currentUser.id,
+                fecha_cita: dateTimeString,
+                estado: 'pendiente',
+                notas: ''
+            };
 
-      await this.firestoreService.createCita(cita);
-      console.log(`Cita reservada para el ${this.selectedDate} a las ${this.selectedSlot}`);
-    } catch (error) {
-      console.error('Error al reservar la cita:', error);
+            console.log('Cita a crear:', cita);
+
+            await this.firestoreService.createCita(cita);
+            console.log(`Cita reservada para el ${this.selectedDate} a las ${this.selectedSlot}`);
+        } catch (error) {
+            console.error('Error al reservar la cita:', error);
+        }
+    } else {
+        console.error('Usuario no autenticado o servicio no disponible');
     }
-  }
 }
 
+}

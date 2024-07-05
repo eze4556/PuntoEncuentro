@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FirestoreService } from '../../common/services/firestore.service';
 import { Reviews } from '../../common/models/reviews.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonItem, IonLabel, IonItemDivider, IonButton, IonSelect, IonSelectOption, IonTextarea } from '@ionic/angular/standalone';
+import { AuthService } from '../../common/services/auth.service';
+import { User } from 'src/app/common/models/users.models';
 
 @Component({
   standalone: true,
@@ -37,8 +39,15 @@ export class ReviewsComponent implements OnInit {
   currentPage = 1;
   reviewsPerPage = 5;
   totalPages = 0;
+  currentUser: User | null = null;
 
-  constructor(private fb: FormBuilder, private firestoreService: FirestoreService) {
+  @Input() servicioId: string = ''; // Recibe el servicioId como propiedad del componente
+
+  constructor(
+    private fb: FormBuilder,
+    private firestoreService: FirestoreService,
+    private authService: AuthService
+  ) {
     this.reviewForm = this.fb.group({
       calificacion: ['', Validators.required],
       comentario: ['', Validators.required],
@@ -47,12 +56,15 @@ export class ReviewsComponent implements OnInit {
 
   ngOnInit() {
     this.fetchReviews();
+    this.authService.getCurrentUser().subscribe(user => {
+      this.currentUser = user;
+    });
   }
 
   fetchReviews() {
     this.firestoreService.getCollectionChanges<Reviews>('reviews')
       .subscribe(data => {
-        this.reviews = data;
+        this.reviews = data.filter(review => review.servicio_id === this.servicioId);
         this.totalPages = Math.ceil(this.reviews.length / this.reviewsPerPage);
         this.updatePaginatedReviews();
       });
@@ -69,20 +81,28 @@ export class ReviewsComponent implements OnInit {
   }
 
   async onSubmit() {
-    const { calificacion, comentario } = this.reviewForm.value;
-    const review: Reviews = {
-      id: this.firestoreService.createIdDoc(),
-      servicio_id: 'someServiceId', // Debe ser dinámico
-      cliente_id: 'someClientId', // Debe ser dinámico
-      calificacion,
-      comentario,
-      fecha: new Date(), // Asegurando que fecha es un objeto Date
-    };
+    if (this.reviewForm.valid && this.currentUser) {
+      const { calificacion, comentario } = this.reviewForm.value;
+      const review: Reviews = {
+        id: this.firestoreService.createIdDoc(),
+        servicio_id: this.servicioId, // Usar el servicioId recibido
+        cliente_id: this.currentUser.id, // Asignar el id del usuario autenticado
+        calificacion,
+        comentario,
+        fecha: new Date(), // Asegurar que fecha es un objeto Date
+      };
 
-    await this.firestoreService.createDocumentWithAutoId<Reviews>(review, 'reviews');
-    this.fetchReviews();
-    this.reviewForm.reset();
-    this.showForm = false;
+      try {
+        await this.firestoreService.createDocumentWithAutoId<Reviews>(review, 'reviews');
+        this.fetchReviews();
+        this.reviewForm.reset();
+        this.showForm = false;
+      } catch (error) {
+        console.error('Error al crear la reseña:', error);
+      }
+    } else {
+      console.error('Formulario inválido o usuario no autenticado');
+    }
   }
 
   previousPage() {

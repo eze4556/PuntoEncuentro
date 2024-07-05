@@ -42,6 +42,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/create-service/create-service.component').then(m => m.CreateServiceComponent),
       },
       {
+        path: 'crearCategoria',
+        loadComponent: () => import('./components/crear-categoria/crear-categoria.component').then(m => m.CrearCategoriaComponent),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',
@@ -53,11 +57,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/home-cliente/home-cliente.component').then((m) => m.HomeClienteComponent),
   },
   {
-    path: 'serviceDetail',
+    path: 'serviceDetail/:id',
     loadComponent: () => import('./components/service-detail/service-detail.component').then((m) => m.ServiceDetailComponent),
   },
   {
-    path: 'cita',
+    path: 'cita/:id',
     loadComponent: () => import('./components/cita/cita.component').then((m) => m.CitaComponent),
   },
   {

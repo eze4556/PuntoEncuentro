@@ -17,7 +17,11 @@
   </ion-item>
   <ion-item>
     <ion-label>Categoría</ion-label>
-    <ion-input formControlName="category"></ion-input>
+    <ion-select formControlName="category">
+      <ion-select-option *ngFor="let category of categories" [value]="category.id">
+        {{ category.nombre }}
+      </ion-select-option>
+    </ion-select>
   </ion-item>
   <ion-item>
     <ion-label>Horarios</ion-label>
@@ -39,10 +43,9 @@
     <ion-label>Dirección</ion-label>
     <ion-input formControlName="dirreccion"></ion-input>
   </ion-item>
-   <ion-item>
-            <ion-label position="stacked">Imagen</ion-label>
-            <input type="file" (change)="onFileSelected($event)">
-          </ion-item>
-          
+  <ion-item>
+    <ion-label position="stacked">Imagen</ion-label>
+    <input type="file" (change)="onFileSelected($event)">
+  </ion-item>
   <ion-button type="submit" [disabled]="createServiceForm.invalid">Crear Servicio</ion-button>
 </form>

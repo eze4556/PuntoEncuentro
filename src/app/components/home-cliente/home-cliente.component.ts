@@ -50,18 +50,16 @@ import { Service } from 'src/app/common/models/service.models';
     IonSelectOption,
     IonSelect,
     IonButton
-
   ],
 })
 
-export class HomeClienteComponent  {
-
- services: Service[] = [];
+export class HomeClienteComponent implements OnInit {
+  services: Service[] = [];
   filteredServices: Service[] = [];
 
-  constructor(private router: Router,private firestoreService: FirestoreService) { }
+  constructor(private router: Router, private firestoreService: FirestoreService) { }
 
-   ngOnInit() {
+  ngOnInit() {
     this.loadServices();
   }
 
@@ -79,10 +77,7 @@ export class HomeClienteComponent  {
     );
   }
 
-
-  goToService() {
-  this.router.navigate(['/serviceDetail']);
-}
-
-
+  goToService(serviceId: string) {
+    this.router.navigate(['/serviceDetail', serviceId]);
+  }
 }
