@@ -64,6 +64,8 @@ export class CreateServiceComponent implements OnInit {
 
   onFileSelected(event: any) {
     this.imagenUsuario = event.target.files[0];
+      console.log('Imagen seleccionada:', this.imagenUsuario); // Añadir este log para verificar que se selecciona la imagen correctamente
+
   }
 
   async onSubmit() {
