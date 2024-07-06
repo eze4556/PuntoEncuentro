@@ -2,7 +2,7 @@
   <ion-grid>
     <ion-row>
       <ion-col size="12" class="ion-text-center">
-        <h2>Iniciá sesión</h2>
+        <h2 class="login-title">Iniciá sesión</h2>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -37,16 +37,18 @@
     </ion-row>
     <ion-row>
       <ion-col size="12">
-        <ion-button expand="block" color="light" (click)="loginWithGoogle()">
-          <ion-icon slot="start" name="logo-google"></ion-icon>
+        <ion-button expand="block" class="google-button" (click)="loginWithGoogle()">
+          <img src="../../../assets/google.svg" class="icon"/>
           Continuar con Google
         </ion-button>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col size="12">
-        <ion-button expand="block" color="light" (click)="loginWithFacebook()">
-          <ion-icon slot="start" name="logo-facebook"></ion-icon>
+        <ion-button expand="block" class="facebook-button" (click)="loginWithFacebook()">
+          <!-- <ion-icon slot="start" name="logo-facebook"></ion-icon> -->
+                    <img src="../../../assets/Facebook_f_logo_(2019).svg" class="icon"/>
+
           Continuar con Facebook
         </ion-button>
       </ion-col>

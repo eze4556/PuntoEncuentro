@@ -47,7 +47,7 @@ export class AuthService {
     return await this.afAuth.signOut();
   }
 
-  
+
 
  async loginWithGoogle(): Promise<firebase.auth.UserCredential> {
   const provider = new firebase.auth.GoogleAuthProvider();
@@ -135,4 +135,5 @@ private async updateUserData(user: firebase.User | null): Promise<void> {
   getCurrentUser(): Observable<User | null> {
     return this.user$;
   }
+
 }
