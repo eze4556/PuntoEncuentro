@@ -1,6 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue, collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference, DocumentSnapshot, QueryDocumentSnapshot, query, where } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import {
+  Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue,
+  collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference,
+  DocumentSnapshot, QueryDocumentSnapshot, query, where, QuerySnapshot, getFirestore
+} from '@angular/fire/firestore';
+import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 const { v4: uuidv4 } = require('uuid');
 
@@ -18,6 +22,9 @@ const converter = <T>() => ({
 
 const docWithConverter = <T>(firestore: Firestore, path: string) =>
   doc(firestore, path).withConverter(converter<T>());
+
+const collectionWithConverter = <T>(firestore: Firestore, path: string) =>
+  collection(firestore, path).withConverter(converter<T>());
 
 @Injectable({
   providedIn: 'root'
@@ -70,16 +77,11 @@ export class FirestoreService {
     return { uid: '05OTLvPNICH5Gs9ZsW0k' };
   }
 
-  async getDocumentById(collectionPath: string, id: string): Promise<DocumentData | undefined> {
-    try {
-      const docRef = doc(this.firestore, `${collectionPath}/${id}`);
-      const docSnapshot = await getDoc(docRef);
-      console.log('docSnapshot:', docSnapshot);
-      return docSnapshot.exists() ? docSnapshot.data() : undefined;
-    } catch (error) {
-      console.error('Error fetching document:', error);
-      throw error;
-    }
+  getDocumentById<T>(collectionPath: string, id: string): Observable<T | undefined> {
+    const docRef = doc(this.firestore, `${collectionPath}/${id}`).withConverter(converter<T>());
+    return from(getDoc(docRef)).pipe(
+      map(docSnapshot => docSnapshot.exists() ? docSnapshot.data() as T : undefined)
+    );
   }
 
   async getUserData(userId: string): Promise<User | undefined> {
@@ -121,19 +123,53 @@ export class FirestoreService {
     return appointments;
   }
 
+  getHorariosByUserId(userId: string): Observable<QuerySnapshot<DocumentData>> {
+    const horariosRef = collection(this.firestore, 'horarios');
+    const horariosQuery = query(horariosRef, where('userId', '==', userId));
+    return from(getDocs(horariosQuery));
+  }
+
   async getReviewsByService(serviceId: string): Promise<Reviews[]> {
-    const reviewsRef = collection(this.firestore, 'reviews');
-    const querySnapshot = await getDocs(reviewsRef);
+    try {
+      const reviewsRef = collection(this.firestore, 'reviews') as CollectionReference<Reviews>;
+      const reviewsQuery = query(reviewsRef, where('servicio_id', '==', serviceId));
+      const querySnapshot = await getDocs(reviewsQuery);
 
-    const resenas: Reviews[] = [];
-    querySnapshot.forEach(doc => {
-      const resena = doc.data() as Reviews;
-      if (resena.servicio_id === serviceId) {
-        resenas.push(resena);
+      const reviews: Reviews[] = [];
+      querySnapshot.forEach(doc => {
+        const review = doc.data();
+        reviews.push(review);
+      });
+      console.log('Reviews:', reviews);
+      return reviews;
+    } catch (error) {
+      console.error('Error retrieving reviews for service ID:', serviceId, error);
+      throw error;
+    }
+  }
+
+  async getReviewsByProviderId(providerId: string): Promise<Reviews[]> {
+    try {
+      const servicesRef = collectionWithConverter<Service>(this.firestore, 'services');
+      const servicesQuery = query(servicesRef, where('providerId', '==', providerId));
+      const servicesSnapshot = await getDocs(servicesQuery);
+
+      const reviews: Reviews[] = [];
+      for (const serviceDoc of servicesSnapshot.docs) {
+        const service = serviceDoc.data();
+        const reviewsRef = collectionWithConverter<Reviews>(this.firestore, 'reviews');
+        const reviewsQuery = query(reviewsRef, where('servicio_id', '==', service.id));
+        const reviewsSnapshot = await getDocs(reviewsQuery);
+        reviewsSnapshot.forEach(doc => {
+          reviews.push(doc.data());
+        });
       }
-    });
-
-    return resenas;
+      console.log('All reviews for provider services:', reviews);
+      return reviews;
+    } catch (error) {
+      console.error('Error retrieving reviews for provider ID:', providerId, error);
+      throw error;
+    }
   }
 
   async createService(service: Service): Promise<void> {
@@ -178,14 +214,50 @@ export class FirestoreService {
     );
   }
 
-  async getCategories(): Promise<CategoryI[]> {
-  const categoriesRef = collection(this.firestore, 'categorias') as CollectionReference<CategoryI>;
-  const querySnapshot = await getDocs(categoriesRef);
-  const categories: CategoryI[] = [];
-  querySnapshot.forEach(doc => {
-    categories.push(doc.data());
-  });
-  return categories;
-}
+  async createAppointment(appointment: Citas): Promise<void> {
+    const appointmentRef = docWithConverter<Citas>(this.firestore, `Citas/${appointment.id}`);
+    return setDoc(appointmentRef, appointment);
+  }
+
+  // Método para obtener citas por usuario_id
+  async getAppointmentsByUserId(userId: string): Promise<Citas[]> {
+    const appointmentsRef = collection(this.firestore, 'Citas') as CollectionReference<Citas>;
+    const querySnapshot = await getDocs(query(appointmentsRef, where('usuario_id', '==', userId)));
+    const appointments: Citas[] = [];
+    querySnapshot.forEach(doc => {
+      appointments.push(doc.data());
+    });
+    return appointments;
+  }
+
+  // Método para obtener reseñas por cliente_id
+  async getReviewsByClientId(clientId: string): Promise<Reviews[]> {
+    const reviewsRef = collection(this.firestore, 'reviews') as CollectionReference<Reviews>;
+    const querySnapshot = await getDocs(query(reviewsRef, where('cliente_id', '==', clientId)));
+    const reviews: Reviews[] = [];
+    querySnapshot.forEach(doc => {
+      reviews.push(doc.data());
+    });
+    return reviews;
+  }
+
+  async getServiceById(serviceId: string): Promise<Service | undefined> {
+    try {
+      const serviceRef = doc(this.firestore, `services/${serviceId}`).withConverter(converter<Service>());
+      const serviceSnapshot = await getDoc(serviceRef);
+      if (serviceSnapshot.exists()) {
+        const data = serviceSnapshot.data();
+        console.log('Service data:', data);
+        return data;
+      } else {
+        console.error('No such document with ID:', serviceId);
+        return undefined;
+      }
+    } catch (error) {
+      console.error('Error retrieving document with ID:', serviceId, error);
+      throw error;
+    }
+  }
+
 
 }

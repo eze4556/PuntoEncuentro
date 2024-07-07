@@ -4,5 +4,6 @@ export interface Reviews {
   cliente_id : string;
   calificacion: number;
   comentario : string;
-  fecha: Date;
+  nombreEmpresa?: string;
+  nombreCliente?: string;
 }

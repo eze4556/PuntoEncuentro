@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonItem, IonLabel, IonItemDivider, IonButton, IonSelect, IonSelectOption, IonTextarea } from '@ionic/angular/standalone';
 import { AuthService } from '../../common/services/auth.service';
 import { User } from 'src/app/common/models/users.models';
+import { Service } from 'src/app/common/models/service.models';
 
 @Component({
   standalone: true,
@@ -42,6 +43,7 @@ export class ReviewsComponent implements OnInit {
   currentUser: User | null = null;
 
   @Input() servicioId: string = ''; // Recibe el servicioId como propiedad del componente
+  servicioNombreEmpresa: string = ''; // Almacena el nombre de la empresa del servicio
 
   constructor(
     private fb: FormBuilder,
@@ -59,6 +61,7 @@ export class ReviewsComponent implements OnInit {
     this.authService.getCurrentUser().subscribe(user => {
       this.currentUser = user;
     });
+    this.fetchServiceName();
   }
 
   fetchReviews() {
@@ -68,6 +71,14 @@ export class ReviewsComponent implements OnInit {
         this.totalPages = Math.ceil(this.reviews.length / this.reviewsPerPage);
         this.updatePaginatedReviews();
       });
+  }
+
+  fetchServiceName() {
+    this.firestoreService.getDocumentById<Service>('services', this.servicioId).subscribe(service => {
+      if (service) {
+        this.servicioNombreEmpresa = service.nombreEmpresa;
+      }
+    });
   }
 
   updatePaginatedReviews() {
@@ -86,10 +97,11 @@ export class ReviewsComponent implements OnInit {
       const review: Reviews = {
         id: this.firestoreService.createIdDoc(),
         servicio_id: this.servicioId, // Usar el servicioId recibido
+        nombreEmpresa: this.servicioNombreEmpresa, // Usar el nombre de la empresa del servicio
+        nombreCliente: this.currentUser.nombre,
         cliente_id: this.currentUser.id, // Asignar el id del usuario autenticado
         calificacion,
         comentario,
-        fecha: new Date(), // Asegurar que fecha es un objeto Date
       };
 
       try {

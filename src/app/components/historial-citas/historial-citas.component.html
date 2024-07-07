@@ -9,7 +9,10 @@
     <ion-item *ngFor="let cita of citas">
       <ion-label>
         <h2>{{ cita.fecha_cita }}</h2>
-        <p>Cliente ID: {{ cita.cliente_id }}</p>
+        <p *ngIf="userType === 'cliente'">Servicio: {{ cita.nombreEmpresa }}</p>
+        <p *ngIf="userType === 'proveedor'">Cliente: {{ cita.nombre }}</p>
+        <p>Estado: {{ cita.estado }}</p>
+        <p>Horario: {{ cita.fecha_cita.split('T')[1].split(':00.000Z')[0] }}</p>
       </ion-label>
     </ion-item>
   </ion-list>
@@ -17,4 +20,3 @@
     <ion-spinner></ion-spinner>
   </ng-template>
 </ion-content>
-

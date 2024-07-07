@@ -1,4 +1,3 @@
-// profile.component.ts
 import { IonItem, IonButton, IonLabel, IonInput, IonContent, IonGrid, IonRow, IonIcon, IonCol, IonCard, IonCardHeader, IonCardTitle, IonList, IonCardContent, IonToolbar, IonCardSubtitle, IonTitle, IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect, IonAvatar, IonMenu, IonMenuToggle, IonSplitPane, IonRouterOutlet } from '@ionic/angular/standalone';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -17,7 +16,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./profile.component.scss'],
   standalone: true,
   imports: [
-    IonCardSubtitle,IonAvatar, IonSpinner, IonButtons, IonBackButton, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonLabel, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, IonList, IonCardContent, CommonModule, FormsModule, ReactiveFormsModule, IonSelectOption, IonSelect, IonButton, IonAvatar, IonMenu, IonMenuToggle, IonIcon, IonRouterOutlet, IonSplitPane, RouterModule, IoniconsModule
+    IonCardSubtitle, IonAvatar, IonSpinner, IonButtons, IonBackButton, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonLabel, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, IonList, IonCardContent, CommonModule, FormsModule, ReactiveFormsModule, IonSelectOption, IonSelect, IonButton, IonAvatar, IonMenu, IonMenuToggle, IonIcon, IonRouterOutlet, IonSplitPane, RouterModule, IoniconsModule
   ],
 })
 export class ProfileComponent implements OnInit {
@@ -31,9 +30,14 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     this.authService.getCurrentUser().subscribe(user => {
-      this.user = user;
-      if (user?.tipo_usuario === 'proveedor') {
-        this.loadServiceData(user.id);
+      if (user) {
+        this.user = {
+          ...user,
+          fecha_registro: new Date(user.fecha_registro) // Aseguramos que fecha_registro es un Date
+        };
+        if (user.tipo_usuario === 'proveedor') {
+          this.loadServiceData(user.id);
+        }
       }
     });
   }

@@ -21,7 +21,6 @@
             <ion-icon name="briefcase" slot="start"></ion-icon>
             <ion-label>Perfil</ion-label>
           </ion-item>
-
           <!-- Configurar Horario: Solo para Proveedores -->
           <ion-item *ngIf="user?.tipo_usuario === 'proveedor'" [routerLink]="['/perfil/horarios']" (click)="selectOption('horarios')">
             <ion-icon name="briefcase" slot="start"></ion-icon>
@@ -45,7 +44,6 @@
             <ion-icon name="briefcase" slot="start"></ion-icon>
             <ion-label>Crear Servicio</ion-label>
           </ion-item>
-
           <!-- Crear Categoria: Solo para Admin -->
           <ion-item *ngIf="user?.tipo_usuario === 'admin'" [routerLink]="['/perfil/crearCategoria']" (click)="selectOption('crearCategoria')">
             <ion-icon name="briefcase" slot="start"></ion-icon>

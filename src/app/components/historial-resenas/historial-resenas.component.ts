@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FirestoreService } from 'src/app/common/services/firestore.service';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
 import { Reviews } from 'src/app/common/models/reviews.model';
+import { AuthService } from 'src/app/common/services/auth.service'; // Asegúrate de tener un AuthService para obtener el usuario actual
+import { User } from 'src/app/common/models/users.models';
 
 @Component({
   selector: 'app-historial-resenas',
@@ -17,21 +19,32 @@ import { Reviews } from 'src/app/common/models/reviews.model';
 })
 export class HistorialResenasComponent implements OnInit {
   resenas$: Observable<Reviews[]>;
-  serviceId: string = 'someServiceId'; // Usando un ID de servicio estático como ejemplo
+  userId: string;
+  userType: string;
 
-  constructor(private firestoreService: FirestoreService) { }
+  constructor(private firestoreService: FirestoreService, private authService: AuthService) { }
 
   ngOnInit() {
-    this.loadReviews();
+    this.authService.getCurrentUser().subscribe(user => {
+      if (user) {
+        this.userId = user.id;
+        this.userType = user.tipo_usuario;
+        this.loadReviews();
+      } else {
+        console.error('No se pudo obtener el usuario actual.');
+      }
+    });
   }
 
   async loadReviews() {
     try {
-      const resenas = await this.firestoreService.getReviewsByService(this.serviceId);
-      this.resenas$ = new Observable<Reviews[]>(subscriber => {
-        subscriber.next(resenas);
-        subscriber.complete();
-      });
+      if (this.userType === 'cliente') {
+        const resenas = await this.firestoreService.getReviewsByClientId(this.userId);
+        this.resenas$ = from([resenas]);
+      } else if (this.userType === 'proveedor') {
+        const resenas = await this.firestoreService.getReviewsByProviderId(this.userId); // Aquí suponemos que el userId es el providerId
+        this.resenas$ = from([resenas]);
+      }
     } catch (error) {
       console.error('Error cargando reseñas:', error);
     }
