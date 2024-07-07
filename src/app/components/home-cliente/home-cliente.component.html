@@ -4,11 +4,27 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="goToProfile()">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-searchbar placeholder="Buscar servicios..." (ionInput)="filterServices($event)"></ion-searchbar>
+
+   <ion-item>
+    <ion-label>Categoría:</ion-label>
+    <ion-select (ionChange)="filterServicesByCategory($event.detail.value)">
+      <ion-select-option *ngFor="let category of categories" [value]="category.id">
+        {{ category.nombre }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
 
   <ion-list>
     <ion-item *ngFor="let service of filteredServices" (click)="goToService(service.id)">

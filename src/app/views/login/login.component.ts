@@ -90,6 +90,7 @@ export class LoginComponent {
       const userCredential = await this.authService.loginWithGoogle();
       const user = await this.firestoreService.getUserByEmail(userCredential.user.email);
       this.redirectUser(user);
+      await this.showAlert('Éxito', 'Inicio de sesión con Google exitoso');
     } catch (error) {
       const alert = await this.alertController.create({
         header: 'Error',
@@ -105,6 +106,8 @@ export class LoginComponent {
       const userCredential = await this.authService.loginWithFacebook();
       const user = await this.firestoreService.getUserByEmail(userCredential.user.email);
       this.redirectUser(user);
+            await this.showAlert('Éxito', 'Inicio de sesión con Facebook exitoso');
+
     } catch (error) {
       const alert = await this.alertController.create({
         header: 'Error',
@@ -141,6 +144,9 @@ export class LoginComponent {
     });
     await alert.present();
   }
+
+
+
 
   goToResetPassword() {
     this.router.navigate(['/reset-password']);

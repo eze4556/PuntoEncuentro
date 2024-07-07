@@ -11,10 +11,11 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonList,
+
   IonCardContent,
   IonToolbar,
   IonTitle,
-  IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect, IonSearchbar, IonAvatar } from '@ionic/angular/standalone';
+  IonHeader, IonBackButton, IonButtons, IonSpinner, IonSelectOption, IonSelect, IonSearchbar, IonAvatar, IonIcon } from '@ionic/angular/standalone';
 import { Component, OnInit, Input } from '@angular/core';
 import { FirestoreService } from '../../common/services/firestore.service';
 import { Observable } from 'rxjs';
@@ -22,13 +23,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Service } from 'src/app/common/models/service.models';
+import { CategoryI } from 'src/app/common/models/categoria.model';
 
 @Component({
   selector: 'app-home-cliente',
   templateUrl: './home-cliente.component.html',
   styleUrls: ['./home-cliente.component.scss'],
  standalone: true,
-  imports: [IonAvatar, IonSearchbar, IonSpinner, IonButtons, IonBackButton,
+  imports: [IonIcon, IonAvatar, IonSearchbar, IonSpinner, IonButtons, IonBackButton,
     IonHeader,
     IonTitle,
     IonToolbar,
@@ -49,23 +51,42 @@ import { Service } from 'src/app/common/models/service.models';
     ReactiveFormsModule,
     IonSelectOption,
     IonSelect,
-    IonButton
+    IonButton,
+    IonIcon,
   ],
 })
 
 export class HomeClienteComponent implements OnInit {
   services: Service[] = [];
   filteredServices: Service[] = [];
+  categories: CategoryI[] = [];
 
   constructor(private router: Router, private firestoreService: FirestoreService) { }
 
   ngOnInit() {
     this.loadServices();
+    this.loadCategories();
   }
 
   async loadServices() {
     this.services = await this.firestoreService.getServices();
-    this.filteredServices = this.services; // Initially, all services are shown
+    this.filteredServices = this.services;
+  }
+
+
+
+loadCategories() {
+    this.firestoreService.getCollectionChanges<CategoryI>('Categorías').subscribe(data => {
+      if (data) {
+        this.categories = data;
+      }
+    });
+  }
+
+  filterServicesByCategory(categoryId: string) {
+    this.filteredServices = this.services.filter(service =>
+      service.category === categoryId
+    );
   }
 
   filterServices(event: any) {
@@ -80,4 +101,10 @@ export class HomeClienteComponent implements OnInit {
   goToService(serviceId: string) {
     this.router.navigate(['/serviceDetail', serviceId]);
   }
+
+ goToProfile() {
+    this.router.navigate(['/perfil']);
+  }
+
+
 }

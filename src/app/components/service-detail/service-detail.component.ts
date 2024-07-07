@@ -105,11 +105,10 @@ export class ServiceDetailComponent implements OnInit {
 
    // Función para cargar los horarios del usuario actual
   loadHorarios() {
-    // Obtén el usuario actual
+
     this.authService.getCurrentUser().subscribe((user) => {
       if (user) {
         const userId = user.id;
-        // Consulta los horarios para el usuario actual
         this.firestore
           .collection('horarios', (ref) => ref.where('userId', '==', userId))
           .valueChanges({ idField: 'id' })
@@ -160,29 +159,6 @@ export class ServiceDetailComponent implements OnInit {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
   }
 
-
-
-  // loadHorarios() {
-
-  //   this.authService.getCurrentUser().subscribe((user) => {
-  //     if (user) {
-  //       const userId = user.id;
-
-  //       this.firestore.collection('horarios', ref => ref.where('userId', '==', userId))
-  //         .valueChanges({ idField: 'id' })
-  //         .subscribe((horarios: any[]) => {
-  //           this.horarios = horarios;
-  //           console.log('Horarios cargados:', this.horarios);
-  //         });
-  //     }
-  //   });
-  // }
-
-  // formatHorario(horario: any): string {
-  //   let daysOfWeek = Object.keys(horario.selectedDays).filter(key => horario.selectedDays[key]);
-  //   let daysString = daysOfWeek.join(', ');
-  //   return `${daysString} ${horario.startTime}-${horario.endTime}`;
-  // }
 
   navigateToCita() {
     this.router.navigate(['/cita', this.serviceId]);

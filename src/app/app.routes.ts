@@ -47,7 +47,7 @@ export const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'perfilUsuario',
         pathMatch: 'full',
       },
     ],

@@ -8,6 +8,7 @@ import { User } from '../models/users.models';
 import { Citas } from '../models/cita.model';
 import { Reviews } from '../models/reviews.model';
 import { Service } from '../models/service.models';
+import { CategoryI } from '../models/categoria.model';
 
 // Convertidor genérico para Firestore
 const converter = <T>() => ({
@@ -176,4 +177,15 @@ export class FirestoreService {
       map((services: Service[]) => services[0]) // assuming one service per provider
     );
   }
+
+  async getCategories(): Promise<CategoryI[]> {
+  const categoriesRef = collection(this.firestore, 'categorias') as CollectionReference<CategoryI>;
+  const querySnapshot = await getDocs(categoriesRef);
+  const categories: CategoryI[] = [];
+  querySnapshot.forEach(doc => {
+    categories.push(doc.data());
+  });
+  return categories;
+}
+
 }

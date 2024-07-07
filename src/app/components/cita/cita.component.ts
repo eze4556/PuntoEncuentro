@@ -6,6 +6,7 @@ import { Citas } from '../../common/models/cita.model';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../common/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { Service } from 'src/app/common/models/service.models';
 
 @Component({
   selector: 'app-cita',
@@ -46,6 +47,8 @@ export class CitaComponent implements OnInit {
   serviceId: string | null = null;
   currentUser: any = null; // Ajustar según el tipo de usuario
 
+ service: Service | null = null;
+
   constructor(
     private firestoreService: FirestoreService,
     private authService: AuthService,
@@ -62,7 +65,15 @@ export class CitaComponent implements OnInit {
     this.authService.getCurrentUser().subscribe(user => {
       this.currentUser = user;
     });
+
+this.loadService(this.serviceId);
   }
+
+
+ async loadService(serviceId: string) {
+    this.service = await this.firestoreService.getDocumentById('services', serviceId) as Service;
+  }
+
 
   async fetchServiceSchedule() {
     try {

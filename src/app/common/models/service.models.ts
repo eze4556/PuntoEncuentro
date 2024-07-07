@@ -11,6 +11,5 @@ export interface Service {
   price: number;
   servicio: string;
   dirreccion: string;
-  // imagen: string;
    imageUrl: string;
 }
