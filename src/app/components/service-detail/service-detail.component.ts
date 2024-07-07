@@ -100,7 +100,11 @@ export class ServiceDetailComponent implements OnInit {
   }
 
   async loadService(serviceId: string) {
-    this.service = await this.firestoreService.getDocumentById('services', serviceId) as Service;
+    this.firestoreService.getDocumentById<Service>('services', serviceId).subscribe((service) => {
+      this.service = service;
+    }, (error) => {
+      console.error('Error loading service:', error);
+    });
   }
 
    // Función para cargar los horarios del usuario actual

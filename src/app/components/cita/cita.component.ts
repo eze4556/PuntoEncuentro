@@ -1,4 +1,24 @@
-import { IonButtons, IonBackButton, IonHeader, IonTitle, IonToolbar, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardContent, IonSelectOption, IonSelect, IonButton, IonAvatar, IonRouterOutlet, IonCardSubtitle, IonDatetime } from '@ionic/angular/standalone';
+import {
+  IonButtons,
+  IonBackButton,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonContent,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonSelectOption,
+  IonSelect,
+  IonButton,
+  IonAvatar,
+  IonRouterOutlet,
+  IonCardSubtitle,
+  IonDatetime,
+} from '@ionic/angular/standalone';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FirestoreService } from '../../common/services/firestore.service';
@@ -6,6 +26,8 @@ import { Citas } from '../../common/models/cita.model';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../common/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { User } from 'src/app/common/models/users.models';
+import { Service } from 'src/app/common/models/service.models';
 
 @Component({
   selector: 'app-cita',
@@ -32,10 +54,10 @@ import { ActivatedRoute } from '@angular/router';
     IonDatetime,
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   templateUrl: './cita.component.html',
-  styleUrls: ['./cita.component.scss']
+  styleUrls: ['./cita.component.scss'],
 })
 export class CitaComponent implements OnInit {
   selectedDate: string = '';
@@ -44,22 +66,25 @@ export class CitaComponent implements OnInit {
   serviceSchedule: any = {};
   existingAppointments: Citas[] = [];
   serviceId: string | null = null;
-  currentUser: any = null; // Ajustar según el tipo de usuario
+  currentUser: User | null = null;
+  nombreEmpresa: string = '';
 
   constructor(
     private firestoreService: FirestoreService,
     private authService: AuthService,
     private route: ActivatedRoute
-  ) {
-    this.fetchServiceSchedule();
-  }
+  ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
       this.serviceId = params.get('id');
+      if (this.serviceId) {
+        this.fetchServiceSchedule();
+        this.fetchServiceName();
+      }
     });
 
-    this.authService.getCurrentUser().subscribe(user => {
+    this.authService.getCurrentUser().subscribe((user) => {
       this.currentUser = user;
     });
   }
@@ -67,18 +92,58 @@ export class CitaComponent implements OnInit {
   async fetchServiceSchedule() {
     try {
       console.log('Fetching service schedule...');
-      const scheduleDoc = await this.firestoreService.getDocumentById('horarios', 'i4cl9Q0yW8s7xeoIrV5s');
-      console.log('scheduleDoc:', scheduleDoc);
-      if (scheduleDoc) {
-        console.log('Schedule document exists.');
-        this.serviceSchedule = scheduleDoc;
-        console.log('Service schedule data:', this.serviceSchedule);
-        this.initializeCalendar();
-      } else {
-        console.error('No se encontró el horario para el servicio.');
+
+      if (!this.serviceId) {
+        console.error('Service ID is not available.');
+        return;
       }
+
+      this.firestoreService.getDocumentById<Service>('services', this.serviceId).subscribe((serviceDoc) => {
+        if (!serviceDoc) {
+          console.error('No se encontró el servicio.');
+          return;
+        }
+
+        const userId = serviceDoc.providerId;
+        if (!userId) {
+          console.error('No se encontró el userId para el servicio.');
+          return;
+        }
+
+        this.firestoreService.getHorariosByUserId(userId).subscribe((horariosSnapshot) => {
+          if (horariosSnapshot.empty) {
+            console.error('No se encontró el horario para el usuario.');
+            return;
+          }
+
+          this.serviceSchedule = horariosSnapshot.docs[0].data();
+          console.log('Service schedule data:', this.serviceSchedule);
+
+          this.initializeCalendar();
+        });
+      }, (error) => {
+        console.error('Error al obtener el servicio:', error);
+      });
     } catch (error) {
       console.error('Error al obtener el horario del servicio:', error);
+    }
+  }
+
+  async fetchServiceName() {
+    try {
+      if (!this.serviceId) {
+        console.error('Service ID is not available.');
+        return;
+      }
+
+      const service = await this.firestoreService.getDocumentById<Service>('services', this.serviceId).toPromise();
+      if (service) {
+        this.nombreEmpresa = service.nombreEmpresa;
+      } else {
+        console.error('No se encontró el servicio.');
+      }
+    } catch (error) {
+      console.error('Error al obtener el nombre del servicio:', error);
     }
   }
 
@@ -86,8 +151,10 @@ export class CitaComponent implements OnInit {
     const datePicker = document.querySelector('ion-datetime');
     if (datePicker) {
       datePicker.addEventListener('ionRender', () => {
-        const days = Array.from(datePicker.shadowRoot.querySelectorAll('.calendar-day'));
-        days.forEach(day => {
+        const days = Array.from(
+          datePicker.shadowRoot.querySelectorAll('.calendar-day')
+        );
+        days.forEach((day) => {
           const date = day.getAttribute('data-day');
           if (date && !this.isDayAvailable(new Date(date))) {
             day.classList.add('unavailable-day');
@@ -98,8 +165,12 @@ export class CitaComponent implements OnInit {
   }
 
   isDayAvailable(date: Date): boolean {
-    const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
-    const selectedDays: { [key: string]: boolean } = Object.keys(this.serviceSchedule.selectedDays).reduce((acc: { [key: string]: boolean }, key: string) => {
+    const dayName = date
+      .toLocaleDateString('es-ES', { weekday: 'long' })
+      .toLowerCase();
+    const selectedDays: { [key: string]: boolean } = Object.keys(
+      this.serviceSchedule.selectedDays
+    ).reduce((acc: { [key: string]: boolean }, key: string) => {
       acc[key.toLowerCase()] = this.serviceSchedule.selectedDays[key];
       return acc;
     }, {});
@@ -114,7 +185,9 @@ export class CitaComponent implements OnInit {
 
   async fetchExistingAppointments() {
     try {
-      const appointments = await this.firestoreService.getAppointmentsByDate(this.selectedDate.split('T')[0]);
+      const appointments = await this.firestoreService.getAppointmentsByDate(
+        this.selectedDate.split('T')[0]
+      );
       this.existingAppointments = appointments;
     } catch (error) {
       console.error('Error fetching existing appointments:', error);
@@ -130,7 +203,9 @@ export class CitaComponent implements OnInit {
 
     const startTime = this.convertToMinutes(this.serviceSchedule.startTime);
     const endTime = this.convertToMinutes(this.serviceSchedule.endTime);
-    const [breakStart, breakEnd] = this.convertToTimeRange(this.serviceSchedule.breakTimes);
+    const [breakStart, breakEnd] = this.convertToTimeRange(
+      this.serviceSchedule.breakTimes
+    );
 
     this.availableSlots = [];
     for (let time = startTime; time < endTime; time += 30) {
@@ -144,7 +219,9 @@ export class CitaComponent implements OnInit {
 
   isSlotBooked(slot: string): boolean {
     const slotDateStr = `${this.selectedDate.split('T')[0]}T${slot}:00`;
-    return this.existingAppointments.some(appointment => appointment.fecha_cita === slotDateStr);
+    return this.existingAppointments.some(
+      (appointment) => appointment.fecha_cita === slotDateStr
+    );
   }
 
   convertToMinutes(time: string): number {
@@ -159,7 +236,9 @@ export class CitaComponent implements OnInit {
   }
 
   convertToTimeRange(timeRange: string): [number, number] {
-    const [start, end] = timeRange.split('-').map(time => this.convertToMinutes(time));
+    const [start, end] = timeRange.split('-').map((time) =>
+      this.convertToMinutes(time)
+    );
     return [start, end];
   }
 
@@ -169,29 +248,32 @@ export class CitaComponent implements OnInit {
 
   async confirmAppointment() {
     if (this.currentUser && this.serviceId) {
-        try {
-            const [date] = this.selectedDate.split('T');
-            const dateTimeString = `${date}T${this.selectedSlot}:00`;
+      try {
+        const [date] = this.selectedDate.split('T');
+        const appointment: Citas = {
+          id: this.firestoreService.createIdDoc(),
+          usuario_id: this.currentUser.id,
+          fecha_cita: `${date}T${this.selectedSlot}:00`,
+          servicio_id: this.serviceId,
+          estado: 'pendiente',
+          nombre: this.currentUser.nombre,
+          nombreEmpresa: this.nombreEmpresa,
+        };
 
-            const cita: Citas = {
-                id: this.firestoreService.createIdDoc(),
-                servicio_id: this.serviceId,
-                cliente_id: this.currentUser.id,
-                fecha_cita: dateTimeString,
-                estado: 'pendiente',
-                notas: ''
-            };
-
-            console.log('Cita a crear:', cita);
-
-            await this.firestoreService.createCita(cita);
-            console.log(`Cita reservada para el ${this.selectedDate} a las ${this.selectedSlot}`);
-        } catch (error) {
-            console.error('Error al reservar la cita:', error);
-        }
+        await this.firestoreService.createAppointment(appointment);
+        console.log('Cita confirmada con éxito:', appointment);
+        this.resetSelection();
+      } catch (error) {
+        console.error('Error al confirmar la cita:', error);
+      }
     } else {
-        console.error('Usuario no autenticado o servicio no disponible');
+      console.error('Usuario o servicio no disponible.');
     }
-}
+  }
 
+  resetSelection() {
+    this.selectedDate = '';
+    this.selectedSlot = '';
+    this.availableSlots = [];
+  }
 }

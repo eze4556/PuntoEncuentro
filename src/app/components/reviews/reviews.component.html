@@ -7,12 +7,11 @@
       <div *ngFor="let review of paginatedReviews">
         <ion-card class="review-card">
           <ion-card-header class="review-card-header">
-            <ion-card-title class="review-card-title">{{ review.cliente_id }}</ion-card-title>
+            <ion-card-title class="review-card-title">{{ review.nombreCliente }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <p>{{ review.comentario }}</p>
             <p>Calificación: {{ review.calificacion }}</p>
-            <p>Fecha: {{ review.fecha | date: 'shortDate' }}</p>
           </ion-card-content>
         </ion-card>
       </div>
