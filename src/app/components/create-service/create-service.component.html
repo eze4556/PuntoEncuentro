@@ -1,47 +1,58 @@
-<form [formGroup]="createServiceForm" (ngSubmit)="onSubmit()">
-  <ion-item>
-    <ion-label>Nombre de la Empresa</ion-label>
-    <ion-input formControlName="nombreEmpresa"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Email</ion-label>
-    <ion-input type="email" formControlName="email"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Descripción</ion-label>
-    <ion-input formControlName="description"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Teléfono</ion-label>
-    <ion-input formControlName="telefono"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Categoría</ion-label>
-    <ion-select formControlName="category">
-      <ion-select-option *ngFor="let category of categories" [value]="category.id">
-        {{ category.nombre }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
-  <ion-item>
-    <ion-label>Sobre Nosotros</ion-label>
-    <ion-input formControlName="sobreNosotros"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Precio</ion-label>
-    <ion-input type="number" formControlName="price"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Servicio</ion-label>
-    <ion-input formControlName="servicio"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Dirección</ion-label>
-    <ion-input formControlName="dirreccion"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label position="stacked">Imagen</ion-label>
-    <input type="file" (change)="onFileSelected($event)">
-  </ion-item>
-  <ion-button type="submit" [disabled]="createServiceForm.invalid">Crear Servicio</ion-button>
-</form>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Crear Servicio</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/perfilUsuario"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+
+  <form [formGroup]="createServiceForm" (ngSubmit)="onSubmit()">
+    <ion-item>
+      <ion-label>Nombre de la Empresa</ion-label>
+      <ion-input formControlName="nombreEmpresa"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Email</ion-label>
+      <ion-input type="email" formControlName="email"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Descripción</ion-label>
+      <ion-input formControlName="description"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Teléfono</ion-label>
+      <ion-input formControlName="telefono"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Categoría</ion-label>
+      <ion-select formControlName="category">
+        <ion-select-option *ngFor="let category of categories" [value]="category.id">
+          {{ category.nombre }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label>Sobre Nosotros</ion-label>
+      <ion-input formControlName="sobreNosotros"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Precio</ion-label>
+      <ion-input type="number" formControlName="price"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Servicio</ion-label>
+      <ion-input formControlName="servicio"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Dirección</ion-label>
+      <ion-input formControlName="dirreccion"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Imagen</ion-label>
+      <input type="file" (change)="onFileSelected($event)">
+    </ion-item>
+    <ion-button type="submit" [disabled]="createServiceForm.invalid">Crear Servicio</ion-button>
+  </form>
+</ion-content>

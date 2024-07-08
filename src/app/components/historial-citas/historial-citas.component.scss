@@ -1,0 +1,82 @@
+ion-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  border: none; /* Elimina cualquier borde por defecto */
+}
+
+.appointment-card {
+  margin-bottom: 15px; /* Espacio entre las tarjetas */
+  box-shadow: none; /* Elimina la sombra de la tarjeta por defecto */
+}
+
+.appointment-item {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: transparent; /* Hacemos transparente el fondo del ion-item */
+}
+
+.appointment-header {
+  width: 100%;
+}
+
+.appointment-info {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.appointment-info h2,
+.appointment-info p {
+  margin-right: 15px;
+  font-size: 1.1em; /* Agranda un poco más las letras */
+}
+
+.appointment-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.status-select {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.estado-pendiente {
+  color: orange;
+}
+
+.estado-confirmada {
+  color: green;
+}
+
+.estado-cancelada {
+  color: red;
+}
+
+ion-button.delete-button {
+  margin-left: 10px;
+}
+
+@media (min-width: 768px) {
+  .appointment-header,
+  .appointment-actions {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .appointment-info {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .appointment-actions {
+    flex-direction: row;
+    align-items: center;
+  }
+}

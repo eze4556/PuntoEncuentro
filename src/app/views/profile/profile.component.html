@@ -1,13 +1,25 @@
-<!-- profile.component.html -->
-<!-- <ion-header>
+<ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
     <ion-title>Mi Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
-</ion-header> -->
+</ion-header>
 
 <ion-content>
   <ion-split-pane contentId="main-content">
     <ion-menu contentId="main-content" type="overlay">
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Menú</ion-title>
+        </ion-toolbar>
+      </ion-header>
       <ion-content>
         <ion-list>
           <!-- Dashboard: Solo para Proveedores -->
@@ -41,7 +53,7 @@
 
           <ion-item *ngIf="user?.tipo_usuario === 'proveedor'" [routerLink]="['/perfil/miServicio']" (click)="selectOption('miServicio')">
             <ion-icon name="briefcase" slot="start"></ion-icon>
-            <ion-label>Editar mi Servicio</ion-label>
+            <ion-label>Mi Servicio</ion-label>
           </ion-item>
 
           <!-- Crear Servicio: Solo para Proveedores -->

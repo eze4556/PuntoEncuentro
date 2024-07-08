@@ -1,8 +1,12 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>Historial de Reseñas</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/perfilUsuario"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
 
 <ion-content>
   <div *ngIf="(resenas$ | async) as resenas; else loading">
@@ -13,7 +17,7 @@
           <h2 *ngIf="userType === 'proveedor'">Cliente: {{ resena.nombreCliente }}</h2>
           <p>{{ resena.comentario }}</p>
           <div class="stars">
-            <ion-icon name="star" *ngFor="let i of createRange(resena.calificacion)"></ion-icon>
+            <ion-icon name="star" id="star" *ngFor="let i of createRange(resena.calificacion)"></ion-icon>
           </div>
         </ion-label>
         <ion-button color="danger" (click)="deleteReview(resena.id)">

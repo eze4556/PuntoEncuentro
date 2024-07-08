@@ -46,6 +46,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/crear-categoria/crear-categoria.component').then(m => m.CrearCategoriaComponent),
       },
       {
+        path: 'miServicio',
+        loadComponent: () => import('./components/mi-servicio/mi-servicio.component').then(m => m.MiServicioComponent),
+      },
+      {
         path: '',
         redirectTo: 'perfilUsuario',
         pathMatch: 'full',

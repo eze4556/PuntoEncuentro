@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import {
   Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue,
   collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference,
-  DocumentSnapshot, QueryDocumentSnapshot, query, where, QuerySnapshot, getFirestore
+  DocumentSnapshot, QueryDocumentSnapshot, query, where, QuerySnapshot, getFirestore,
+  updateDoc
 } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -315,5 +316,24 @@ export class FirestoreService {
     const reviewRef = doc(this.firestore, `reviews/${reviewId}`).withConverter(converter<Reviews>());
     await setDoc(reviewRef, review);
     console.log('Reseña creada en Firestore:', review);
+  }
+
+
+  async updateDocument(collection: string, docId: string, data: any): Promise<void> {
+    const docRef = doc(this.firestore, `${collection}/${docId}`);
+    const docSnapshot = await getDoc(docRef);
+    if (!docSnapshot.exists()) {
+      throw new Error('No document to update');
+    }
+    await updateDoc(docRef, data);
+  }
+  async deleteDocument(collection: string, docId: string): Promise<void> {
+    const docRef = doc(this.firestore, `${collection}/${docId}`);
+    const docSnapshot = await getDoc(docRef);
+    if (!docSnapshot.exists()) {
+      console.error('Document does not exist:', docId);
+      return;
+    }
+    await deleteDoc(docRef);
   }
 }

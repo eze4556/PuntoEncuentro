@@ -3,10 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FirestoreService } from 'src/app/common/services/firestore.service';
 import { Citas } from 'src/app/common/models/cita.model';
 import { Observable, from, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { IonicModule } from '@ionic/angular';
-import { AuthService } from 'src/app/common/services/auth.service'; // Asegúrate de tener un AuthService para obtener el usuario actual
-import { User } from 'src/app/common/models/users.models'; // Importa el modelo de usuario
+import { AuthService } from 'src/app/common/services/auth.service';
+import { User } from 'src/app/common/models/users.models';
 import { Service } from 'src/app/common/models/service.models';
 
 @Component({
@@ -65,8 +65,7 @@ export class HistorialCitasComponent implements OnInit {
             switchMap(citas => {
               console.log('Citas obtenidas para el proveedor:', citas);
               const citasWithUserNames = citas.map(async cita => {
-                const user = await this.firestoreService.getDocumentById<User>('users', cita.usuario_id).toPromise();
-                // console.log(user.nombre)
+                const user = await this.firestoreService.getDocumentById<User>('usuarios', cita.usuario_id).toPromise();
                 return {
                   ...cita,
                   nombre: user?.nombre || 'Desconocido'
@@ -84,6 +83,55 @@ export class HistorialCitasComponent implements OnInit {
           this.citas$ = of([]);
         }
       });
+    }
+  }
+
+  getEstadoClass(estado: string) {
+    return {
+      'estado-pendiente': estado === 'pendiente',
+      'estado-confirmada': estado === 'confirmada',
+      'estado-cancelada': estado === 'cancelada'
+    };
+  }
+
+  formatDate(dateString: string): string {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'
+    };
+    return new Date(dateString).toLocaleDateString('es-ES', options);
+  }
+
+  formatTime(dateString: string): string {
+    const options: Intl.DateTimeFormatOptions = {
+      hour: 'numeric', minute: 'numeric'
+    };
+    return new Date(dateString).toLocaleTimeString('es-ES', options);
+  }
+
+  async cancelAppointment(appointmentId: string) {
+    try {
+      await this.firestoreService.updateDocument('Citas', appointmentId, { estado: 'cancelada' });
+      this.loadAppointments();
+    } catch (error) {
+      console.error('Error cancelando la cita:', error);
+    }
+  }
+
+  async changeAppointmentStatus(appointmentId: string, newStatus: string) {
+    try {
+      await this.firestoreService.updateDocument('Citas', appointmentId, { estado: newStatus });
+      this.loadAppointments();
+    } catch (error) {
+      console.error('Error actualizando el estado de la cita:', error);
+    }
+  }
+
+  async deleteAppointment(appointmentId: string) {
+    try {
+      await this.firestoreService.deleteDocument('Citas', appointmentId);
+      this.loadAppointments();
+    } catch (error) {
+      console.error('Error eliminando la cita:', error);
     }
   }
 

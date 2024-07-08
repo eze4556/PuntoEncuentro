@@ -1,20 +1,42 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>Historial de Citas</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/perfilUsuario"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-list *ngIf="citas$ | async as citas; else loading">
-    <ion-item *ngFor="let cita of citas">
-      <ion-label>
-        <h2>{{ cita.fecha_cita }}</h2>
-        <p *ngIf="userType === 'cliente'">Servicio: {{ cita.nombreEmpresa }}</p>
-        <p *ngIf="userType === 'proveedor'">Cliente: {{ cita.nombre }}</p>
-        <p>Estado: {{ cita.estado }}</p>
-        <p>Horario: {{ cita.fecha_cita.split('T')[1].split(':00.000Z')[0] }}</p>
-      </ion-label>
-    </ion-item>
+    <ng-container *ngFor="let cita of citas">
+      <ion-card class="appointment-card">
+        <ion-item lines="none" class="appointment-item">
+          <div class="appointment-header">
+            <ion-label class="appointment-info">
+              <h2>{{ formatDate(cita.fecha_cita) }}</h2>
+              <p *ngIf="userType === 'cliente'">Servicio: {{ cita.nombreEmpresa }}</p>
+              <p *ngIf="userType === 'proveedor'">Cliente: {{ cita.nombre }}</p>
+              <p [ngClass]="getEstadoClass(cita.estado)">Estado: {{ cita.estado }}</p>
+              <p>Horario: {{ formatTime(cita.fecha_cita) }}</p>
+            </ion-label>
+          </div>
+        </ion-item>
+        <div class="appointment-actions">
+          <ion-item *ngIf="userType === 'proveedor'" lines="none" class="status-select">
+            <ion-label>Estado</ion-label>
+            <ion-select [value]="cita.estado" (ionChange)="changeAppointmentStatus(cita.id, $event.detail.value)">
+              <ion-select-option value="pendiente">Pendiente</ion-select-option>
+              <ion-select-option value="confirmada">Confirmada</ion-select-option>
+              <ion-select-option value="cancelada">Cancelada</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-button color="danger" (click)="deleteAppointment(cita.id)" class="delete-button">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card>
+    </ng-container>
   </ion-list>
   <ng-template #loading>
     <ion-spinner></ion-spinner>
