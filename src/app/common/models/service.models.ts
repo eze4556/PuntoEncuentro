@@ -6,10 +6,11 @@ export interface Service {
   description: string;
   telefono: string;
   category: string;
-  horarios: any;
+
   sobreNosotros: string;
   price: number;
   servicio: string;
   dirreccion: string;
    imageUrl: string;
+   horarios: any[];
 }

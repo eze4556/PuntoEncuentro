@@ -84,17 +84,52 @@ export class ServiceDetailComponent implements OnInit {
     private firestoreService: FirestoreService,
         private authService: AuthService ,
             private firestore: AngularFirestore
-
-
   ) {}
 
-  ngOnInit() {
+
+// ngOnInit() {
+//     this.route.paramMap.subscribe((params) => {
+//       this.serviceId = params.get('id');
+//       if (this.serviceId) {
+//         this.loadService(this.serviceId);
+//                 this.loadHorarios();
+
+//       }
+//     });
+//   }
+
+//   async loadService(serviceId: string) {
+//     this.firestoreService.getDocumentById<Service>('services', serviceId).subscribe((service) => {
+//       this.service = service;
+//     }, (error) => {
+//       console.error('Error loading service:', error);
+//     });
+//   }
+
+
+//   loadHorarios() {
+
+//     this.authService.getCurrentUser().subscribe((user) => {
+//       if (user) {
+//         const userId = user.id;
+//         this.firestore
+//           .collection('horarios', (ref) => ref.where('userId', '==', userId))
+//           .valueChanges({ idField: 'id' })
+//           .subscribe((horarios: any[]) => {
+//             this.horarios = horarios;
+//             this.sortedHorarios = this.sortHorarios(horarios);
+//             console.log('Horarios cargados:', this.horarios);
+//           });
+//       }
+//     });
+//   }
+
+
+   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
       this.serviceId = params.get('id');
       if (this.serviceId) {
         this.loadService(this.serviceId);
-                this.loadHorarios();
-
       }
     });
   }
@@ -102,27 +137,22 @@ export class ServiceDetailComponent implements OnInit {
   async loadService(serviceId: string) {
     this.firestoreService.getDocumentById<Service>('services', serviceId).subscribe((service) => {
       this.service = service;
+      if (this.service) {
+        this.loadHorarios(this.service.providerId);
+      }
     }, (error) => {
       console.error('Error loading service:', error);
     });
   }
 
-   // Función para cargar los horarios del usuario actual
-  loadHorarios() {
-
-    this.authService.getCurrentUser().subscribe((user) => {
-      if (user) {
-        const userId = user.id;
-        this.firestore
-          .collection('horarios', (ref) => ref.where('userId', '==', userId))
-          .valueChanges({ idField: 'id' })
-          .subscribe((horarios: any[]) => {
-            this.horarios = horarios;
-            this.sortedHorarios = this.sortHorarios(horarios);
-            console.log('Horarios cargados:', this.horarios);
-          });
-      }
-    });
+  loadHorarios(providerId: string) {
+    this.firestore.collection('horarios', ref => ref.where('userId', '==', providerId))
+      .valueChanges({ idField: 'id' })
+      .subscribe((horarios: any[]) => {
+        this.horarios = horarios;
+        this.sortedHorarios = this.sortHorarios(horarios);
+        console.log('Horarios cargados:', this.horarios);
+      });
   }
 
   formatHorario(horario: any): string {
