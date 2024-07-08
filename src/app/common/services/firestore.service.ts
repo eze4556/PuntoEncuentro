@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import {
   Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue,
   collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference,
-  DocumentSnapshot, QueryDocumentSnapshot, query, where, QuerySnapshot, getFirestore
+  DocumentSnapshot, QueryDocumentSnapshot, query, where, QuerySnapshot, getFirestore,
+  updateDoc
 } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -258,5 +259,36 @@ export class FirestoreService {
     }
   }
 
+   // Método para actualizar la URL de la imagen de perfil del usuario
+   async updateUserProfileImage(userId: string, imageUrl: string): Promise<void> {
+    try {
+      const userDocRef = doc(this.firestore, `usuarios/${userId}`);
+      await updateDoc(userDocRef, { imagen: imageUrl });
+      console.log('Imagen de perfil actualizada en Firestore');
+    } catch (error) {
+      console.error('Error actualizando la imagen de perfil:', error);
+    }
+  }
 
+  async updateServiceProfileImage(serviceId: string, imageUrl: string): Promise<void> {
+    const serviceRef = doc(this.firestore, `services/${serviceId}`);
+    try {
+      await updateDoc(serviceRef, { imageUrl });
+      console.log('Service profile image updated successfully in Firestore');
+    } catch (error) {
+      console.error('Error updating service profile image:', error);
+      throw error;
+    }
+  }
+
+  async updateService(serviceId: string, serviceData: Partial<Service>): Promise<void> {
+    const serviceRef = doc(this.firestore, `services/${serviceId}`);
+    try {
+      await updateDoc(serviceRef, serviceData);
+      console.log('Service updated successfully in Firestore');
+    } catch (error) {
+      console.error('Error updating service:', error);
+      throw error;
+    }
+  }
 }

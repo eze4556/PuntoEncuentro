@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonHeader, IonItem, IonButton, IonToolbar, IonContent, IonLabel, IonRow, IonGrid, IonCol, IonTitle, IonCheckbox, IonText, IonSelect, IonSelectOption, IonInput } from '@ionic/angular/standalone';
+import { IonHeader, IonItem, IonButton, IonToolbar, IonContent, IonLabel, IonRow, IonGrid, IonCol, IonTitle, IonCheckbox, IonText, IonSelect, IonSelectOption, IonInput, IonButtons, IonBackButton } from '@ionic/angular/standalone';
 import {User} from '../../common/models/users.models'
 import { AuthService } from 'src/app/common/services/auth.service';
 
@@ -30,7 +30,9 @@ import { AuthService } from 'src/app/common/services/auth.service';
     IonText,
     IonSelect,
     IonSelectOption,
-    IonInput
+    IonInput,
+    IonButtons,
+    IonBackButton
   ]
 })
 export class ScheduleConfigComponent {

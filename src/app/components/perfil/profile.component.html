@@ -2,84 +2,38 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-back-button defaultHref="/perfilUsuario"></ion-back-button>
     </ion-buttons>
-    <ion-title class="ion-text-center">Mi Perfil</ion-title>
+    <ion-title class="ion-text-center">Bienvenido {{ user?.nombre }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ng-container *ngIf="user?.tipo_usuario === 'cliente'; else providerTemplate">
-    <ion-grid class="ion-no-padding">
-      <ion-row class="ion-justify-content-center">
-        <ion-col size="12" size-md="8">
-          <ion-avatar class="logo">
-            <img [src]="user?.imagen" alt="Imagen del cliente" class="main-image" />
-          </ion-avatar>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+  <ion-grid class="ion-no-padding">
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="8">
+        <ion-avatar class="logo">
+          <img [src]="user?.imagen || 'assets/default-profile.png'" alt="Imagen del usuario" class="main-image" />
+        </ion-avatar>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-    <ion-card class="info-card">
-      <ion-card-header class="info-card-header">
-        <ion-card-subtitle class="info-card-subtitle">Información de contacto</ion-card-subtitle>
-        <ion-card-title class="info-card-title">{{ user?.nombre }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content class="info-card-content">
-        <!-- <p><ion-icon name="call-outline"></ion-icon> Teléfono: {{ user?.telefono }}</p> -->
-        <p><ion-icon name="mail-outline"></ion-icon> Email: {{ user?.correo }}</p>
-        <p><ion-icon name="time-outline"></ion-icon> Registrado el: {{ user?.fecha_registro | date }}</p>
-      </ion-card-content>
-    </ion-card>
-  </ng-container>
+  <ion-card class="info-card">
+    <ion-card-header class="info-card-header">
+      <ion-card-subtitle class="info-card-subtitle">Información de contacto</ion-card-subtitle>
+      <ion-card-title class="info-card-title">{{ user?.nombre }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="info-card-content">
+      <p><ion-icon name="mail-outline"></ion-icon> Email: {{ user?.correo }}</p>
+      <p><ion-icon name="mail-outline"></ion-icon> Email: {{ user?.tipo_usuario }}</p>
+    </ion-card-content>
+  </ion-card>
 
-  <ng-template #providerTemplate>
-    <ion-grid class="ion-no-padding">
-      <ion-row class="ion-justify-content-center">
-        <ion-col size="12" size-md="8">
-          <ion-avatar class="logo">
-            <img [src]="service?.imageUrl" alt="Imagen de la empresa" class="main-image" />
-          </ion-avatar>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+  <ion-item>
+    <ion-label position="stacked">Subir nueva foto de perfil</ion-label>
+    <input type="file" (change)="onFileSelected($event)">
+  </ion-item>
 
-    <ion-card class="info-card">
-      <ion-card-header class="info-card-header">
-        <ion-card-subtitle class="info-card-subtitle">Información de contacto</ion-card-subtitle>
-        <ion-card-title class="info-card-title">Dirección: {{ service?.dirreccion }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content class="info-card-content">
-        <p><ion-icon name="call-outline"></ion-icon> Teléfono: {{ service?.telefono }}</p>
-        <p><ion-icon name="mail-outline"></ion-icon> Email: {{ service?.email }}</p>
-        <ion-item lines="none">
-          <ion-icon name="time-outline" slot="start"></ion-icon>
-          <ion-label>Horario de atención:</ion-label>
-        </ion-item>
-        <ion-list inset="true">
-          <ion-item>{{ service?.horarios }}</ion-item>
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card class="service-card">
-      <ion-card-header class="service-card-header">
-        <ion-card-title class="service-card-title">Servicios</ion-card-title>
-      </ion-card-header>
-      <ion-card-content class="service-card-content">
-        <ion-list lines="none">
-          <ion-item>{{ service?.servicio }}</ion-item>
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card class="about-card">
-      <ion-card-header class="about-card-header">
-        <ion-card-title class="about-card-title">Sobre nosotros</ion-card-title>
-      </ion-card-header>
-      <ion-card-content class="about-card-content">
-        <p>{{ service?.sobreNosotros }}</p>
-      </ion-card-content>
-    </ion-card>
-  </ng-template>
+  <ion-button (click)="uploadProfileImage()" expand="full">Actualizar Foto de Perfil</ion-button>
 </ion-content>
