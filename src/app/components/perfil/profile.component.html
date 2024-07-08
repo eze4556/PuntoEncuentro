@@ -4,7 +4,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/perfilUsuario"></ion-back-button>
     </ion-buttons>
-    <ion-title class="ion-text-center">Bienvenido {{ user?.nombre }}</ion-title>
+    <ion-title class="ion-text-center">{{ user?.nombre }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -26,7 +26,7 @@
     </ion-card-header>
     <ion-card-content class="info-card-content">
       <p><ion-icon name="mail-outline"></ion-icon> Email: {{ user?.correo }}</p>
-      <p><ion-icon name="mail-outline"></ion-icon> Email: {{ user?.tipo_usuario }}</p>
+      <p><ion-icon name="person"></ion-icon> Tipo de Usuario: {{ user?.tipo_usuario }}</p>
     </ion-card-content>
   </ion-card>
 

@@ -24,6 +24,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Service } from 'src/app/common/models/service.models';
 import { CategoryI } from 'src/app/common/models/categoria.model';
+import { IoniconsModule } from 'src/app/common/modules/ionicons.module';
 
 @Component({
   selector: 'app-home-cliente',
@@ -53,6 +54,7 @@ import { CategoryI } from 'src/app/common/models/categoria.model';
     IonSelect,
     IonButton,
     IonIcon,
+    IoniconsModule
   ],
 })
 

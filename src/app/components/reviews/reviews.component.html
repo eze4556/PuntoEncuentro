@@ -11,7 +11,9 @@
           </ion-card-header>
           <ion-card-content>
             <p>{{ review.comentario }}</p>
-            <p>Calificación: {{ review.calificacion }}</p>
+            <div class="stars">
+              <ion-icon name="star" *ngFor="let i of createRange(review.calificacion)"></ion-icon>
+            </div>
           </ion-card-content>
         </ion-card>
       </div>

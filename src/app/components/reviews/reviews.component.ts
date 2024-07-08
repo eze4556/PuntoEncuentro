@@ -4,10 +4,11 @@ import { FirestoreService } from '../../common/services/firestore.service';
 import { Reviews } from '../../common/models/reviews.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonItem, IonLabel, IonItemDivider, IonButton, IonSelect, IonSelectOption, IonTextarea } from '@ionic/angular/standalone';
+import { IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonItem, IonLabel, IonItemDivider, IonButton, IonSelect, IonSelectOption, IonTextarea, IonIcon } from '@ionic/angular/standalone';
 import { AuthService } from '../../common/services/auth.service';
 import { User } from 'src/app/common/models/users.models';
 import { Service } from 'src/app/common/models/service.models';
+import { IoniconsModule } from 'src/app/common/modules/ionicons.module';
 
 @Component({
   standalone: true,
@@ -26,6 +27,8 @@ import { Service } from 'src/app/common/models/service.models';
     IonSelect,
     IonSelectOption,
     IonTextarea,
+    IonIcon,
+    IoniconsModule
   ],
   selector: 'app-reviews',
   templateUrl: './reviews.component.html',
@@ -95,7 +98,7 @@ export class ReviewsComponent implements OnInit {
     if (this.reviewForm.valid && this.currentUser) {
       const { calificacion, comentario } = this.reviewForm.value;
       const review: Reviews = {
-        id: this.firestoreService.createIdDoc(),
+        id: '', // Inicialmente vacío, será asignado en FirestoreService
         servicio_id: this.servicioId, // Usar el servicioId recibido
         nombreEmpresa: this.servicioNombreEmpresa, // Usar el nombre de la empresa del servicio
         nombreCliente: this.currentUser.nombre,
@@ -105,7 +108,7 @@ export class ReviewsComponent implements OnInit {
       };
 
       try {
-        await this.firestoreService.createDocumentWithAutoId<Reviews>(review, 'reviews');
+        await this.firestoreService.createReview(review);
         this.fetchReviews();
         this.reviewForm.reset();
         this.showForm = false;
@@ -129,5 +132,9 @@ export class ReviewsComponent implements OnInit {
       this.currentPage++;
       this.updatePaginatedReviews();
     }
+  }
+
+  createRange(num: number) {
+    return new Array(num);
   }
 }

@@ -292,4 +292,29 @@ export class FirestoreService {
       throw error;
     }
   }
+  async deleteReview(reviewId: string): Promise<void> {
+    try {
+      const reviewRef = doc(this.firestore, `reviews/${reviewId}`);
+      // Check if the document exists before attempting to delete
+      const reviewSnapshot = await getDoc(reviewRef);
+      if (!reviewSnapshot.exists()) {
+        console.error('Review does not exist:', reviewId);
+        return;
+      }
+      await deleteDoc(reviewRef);
+      console.log('Review deleted successfully in Firestore');
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      throw error;
+    }
+  }
+
+  async createReview(review: Reviews): Promise<void> {
+    const reviewId = this.createIdDoc();
+    review.id = reviewId;
+    console.log('Creando reseña con ID:', reviewId);
+    const reviewRef = doc(this.firestore, `reviews/${reviewId}`).withConverter(converter<Reviews>());
+    await setDoc(reviewRef, review);
+    console.log('Reseña creada en Firestore:', review);
+  }
 }

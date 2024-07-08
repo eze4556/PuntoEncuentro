@@ -4,7 +4,7 @@ import { FirestoreService } from 'src/app/common/services/firestore.service';
 import { Observable, from } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
 import { Reviews } from 'src/app/common/models/reviews.model';
-import { AuthService } from 'src/app/common/services/auth.service'; // Asegúrate de tener un AuthService para obtener el usuario actual
+import { AuthService } from 'src/app/common/services/auth.service';
 import { User } from 'src/app/common/models/users.models';
 
 @Component({
@@ -42,7 +42,7 @@ export class HistorialResenasComponent implements OnInit {
         const resenas = await this.firestoreService.getReviewsByClientId(this.userId);
         this.resenas$ = from([resenas]);
       } else if (this.userType === 'proveedor') {
-        const resenas = await this.firestoreService.getReviewsByProviderId(this.userId); // Aquí suponemos que el userId es el providerId
+        const resenas = await this.firestoreService.getReviewsByProviderId(this.userId);
         this.resenas$ = from([resenas]);
       }
     } catch (error) {
@@ -52,5 +52,15 @@ export class HistorialResenasComponent implements OnInit {
 
   createRange(num: number) {
     return new Array(num);
+  }
+
+  async deleteReview(reviewId: string) {
+    try {
+      console.log(reviewId);
+      await this.firestoreService.deleteReview(reviewId);
+      await this.loadReviews(); // Wait for reviews to reload
+    } catch (error) {
+      console.error('Error eliminando reseña:', error);
+    }
   }
 }
