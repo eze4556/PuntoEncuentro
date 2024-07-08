@@ -2,9 +2,13 @@ import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonHeader, IonItem, IonButton, IonToolbar, IonContent, IonLabel, IonRow, IonGrid, IonCol, IonTitle, IonCheckbox, IonText, IonSelect, IonSelectOption, IonInput, IonButtons, IonBackButton } from '@ionic/angular/standalone';
+import { IonHeader, IonItem, IonButton, IonToolbar, IonContent, IonLabel, IonRow, IonGrid, IonCol, IonTitle, IonCheckbox, IonText, IonSelect, IonSelectOption, IonInput } from '@ionic/angular/standalone';
 import {User} from '../../common/models/users.models'
 import { AuthService } from 'src/app/common/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import { Service } from 'src/app/common/models/service.models';
 
 
 @Component({
@@ -30,9 +34,7 @@ import { AuthService } from 'src/app/common/services/auth.service';
     IonText,
     IonSelect,
     IonSelectOption,
-    IonInput,
-    IonButtons,
-    IonBackButton
+    IonInput
   ]
 })
 export class ScheduleConfigComponent {
@@ -49,8 +51,11 @@ export class ScheduleConfigComponent {
     userId: string | null = null;
      horarios: any[] = [];
 
+  serviceId: any;
 
-  constructor(private firestore: AngularFirestore,private authService: AuthService) {
+
+  constructor(private firestore: AngularFirestore,private authService: AuthService,    private route: ActivatedRoute
+) {
     this.initializeTimeSlots();
   }
 
@@ -62,6 +67,8 @@ export class ScheduleConfigComponent {
       }
     });
   }
+
+ 
 
   initializeTimeSlots() {
     const times = [];
@@ -112,3 +119,4 @@ export class ScheduleConfigComponent {
     }
   }
 }
+

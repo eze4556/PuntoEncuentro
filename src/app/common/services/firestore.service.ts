@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import {
   Firestore, collection, doc, getDoc, setDoc, DocumentData, WithFieldValue,
   collectionData, docData, getDocs, deleteDoc, DocumentReference, CollectionReference,
-  DocumentSnapshot, QueryDocumentSnapshot, query, where, QuerySnapshot, getFirestore,
-  updateDoc
+  DocumentSnapshot, QueryDocumentSnapshot, query, where, QuerySnapshot, getFirestore
 } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';

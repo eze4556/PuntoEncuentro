@@ -105,7 +105,7 @@ loadCategories() {
   }
 
  goToProfile() {
-    this.router.navigate(['/perfil']);
+    this.router.navigate(['/perfil/perfilUsuario']);
   }
 
 
