@@ -48,18 +48,21 @@ export class AuthService {
     }
   }
 
-  async loginWithGoogle(): Promise<firebase.auth.UserCredential> {
-    try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      const credential = await this.afAuth.signInWithPopup(provider);
-      await this.updateUserData(credential.user);
-      await this.updateUserLocation(credential.user);
-      return credential;
-    } catch (error) {
-      console.error('Error during Google login:', error);
-      throw error;
-    }
-  }
+ async loginWithGoogle(): Promise<firebase.auth.UserCredential> {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  const credential = await this.afAuth.signInWithPopup(provider);
+  await this.updateUserData(credential.user);
+
+    await this.updateUserLocation(credential.user);
+
+
+  return credential;
+}
+
+
+
+
+
 
   async loginWithFacebook(): Promise<firebase.auth.UserCredential> {
     try {
@@ -67,12 +70,11 @@ export class AuthService {
       const credential = await this.afAuth.signInWithPopup(provider);
       await this.updateUserData(credential.user);
       await this.updateUserLocation(credential.user);
-      return credential;
-    } catch (error) {
-      console.error('Error during Facebook login:', error);
-      throw error;
-    }
-  }
+
+  return credential;
+}
+
+
 
   private async updateUserLocation(user: firebase.User | null): Promise<void> {
     if (user) {

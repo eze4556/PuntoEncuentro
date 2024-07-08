@@ -13,6 +13,7 @@ import { User } from '../models/users.models';
 import { Citas } from '../models/cita.model';
 import { Reviews } from '../models/reviews.model';
 import { Service } from '../models/service.models';
+import { CategoryI } from '../models/categoria.model';
 
 // Convertidor genérico para Firestore
 const converter = <T>() => ({

@@ -12,4 +12,5 @@ export interface Service {
   servicio: string;
   dirreccion: string;
   imageUrl: string;
+   imageUrl: string;
 }

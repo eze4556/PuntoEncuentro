@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title class="ion-text-center">Clínica Dental Sonrisas</ion-title>
+    <ion-title class="ion-text-center">{{ service?.nombreEmpresa.toUpperCase() }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -11,9 +11,6 @@
   <ion-grid class="ion-no-padding">
     <ion-row class="ion-justify-content-center">
       <ion-col size="6" size-md="6">
-        <ion-avatar class="logo">
-          <img src="../../../assets/images.jpeg" alt="Imagen de la clínica dental Sonrisas" class="main-image" />
-        </ion-avatar>
       </ion-col>
     </ion-row>
   </ion-grid>
